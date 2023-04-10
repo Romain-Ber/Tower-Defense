@@ -12,6 +12,7 @@ namespace Tower_Defense
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Map _map;
+        private Overlay _overlay;
 
         public MainGame()
         {
@@ -34,7 +35,10 @@ namespace Tower_Defense
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _map = new Map(Content, _spriteBatch);
-            _map.LoadContent();
+            _map.Load();
+            _overlay = new Overlay(Content, _spriteBatch);
+            _overlay.Load();
+
 
             // TODO: use this.Content to load your game content here
         }
@@ -46,6 +50,7 @@ namespace Tower_Defense
 
             // TODO: Add your update logic here
             _map.Update(gameTime);
+            _overlay.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -55,8 +60,11 @@ namespace Tower_Defense
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
-            _map.Draw1(gameTime);
-            _map.Draw2(gameTime);
+            _map.Draw(gameTime, "PATH");
+
+
+            _map.Draw(gameTime, "ACCENT");
+            _overlay.Draw(gameTime);
             _spriteBatch.End();
 
             base.Draw(gameTime);

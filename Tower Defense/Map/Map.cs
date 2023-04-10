@@ -3,9 +3,8 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TiledCS;
 
 namespace Tower_Defense
@@ -14,15 +13,21 @@ namespace Tower_Defense
     {
         private ContentManager _content;
         private SpriteBatch _spriteBatch;
-        private TiledMap _map;
-
-
-        private TiledTileset _tileset1, _tileset2, _tileset3, _tileset4, _tileset5;
-        private Texture2D _tilesetTexture1, _tilesetTexture2, _tilesetTexture3, _tilesetTexture4, _tilesetTexture5;
-        private int _tileWidth1, _tileWidth2, _tileWidth3, _tileWidth4, _tileWidth5;
-        private int _tileHeight1, _tileHeight2, _tileHeight3, _tileHeight4, _tileHeight5;
-        private int _tilesetTilesWide1, _tilesetTilesWide2, _tilesetTilesWide3, _tilesetTilesWide4, _tilesetTilesWide5;
-        private int _tilesetTilesHeight1, _tilesetTilesHeight2, _tilesetTilesHeight3, _tilesetTilesHeight4, _tilesetTilesHeight5;
+        private TiledMap map;
+        private Dictionary<int, TiledTileset> tilesets;
+        private Dictionary<int, Texture2D> tilesetTexture;
+        [Flags]
+        enum Trans
+        {
+            None = 0,
+            Flip_H = 1 << 0,
+            Flip_V = 1 << 1,
+            Flip_D = 1 << 2,
+            Rotate_90 = Flip_D | Flip_H,
+            Rotate_180 = Flip_H | Flip_V,
+            Rotate_270 = Flip_V | Flip_D,
+            Rotate_90AndFlip_H = Flip_H | Flip_V | Flip_D,
+        }
 
         public Map(ContentManager content, SpriteBatch spriteBatch)
         { 
@@ -30,39 +35,18 @@ namespace Tower_Defense
             _spriteBatch = spriteBatch;
         }
 
-        public void LoadContent()
+        public void Load()
         {
-            _map = new TiledMap("Content/Tile/map1.tmx");
-            _tileset1 = new TiledTileset("Content/Tile/terrain tiles.tsx");
-            _tilesetTexture1 = _content.Load<Texture2D>("Tile/terrain tiles");
-            _tileWidth1 = _tileset1.TileWidth;
-            _tileHeight1 = _tileset1.TileHeight;
-            _tilesetTilesWide1 = _tileset1.Columns;
-            _tilesetTilesHeight1 = _tileset1.TileCount / _tileset1.Columns;
-            _tileset2 = new TiledTileset("Content/Tile/waterfalls.tsx");
-            _tilesetTexture2 = _content.Load<Texture2D>("Tile/waterfalls");
-            _tileWidth2 = _tileset2.TileWidth;
-            _tileHeight2 = _tileset2.TileHeight;
-            _tilesetTilesWide2 = _tileset2.Columns;
-            _tilesetTilesHeight2 = _tileset2.TileCount / _tileset2.Columns;
-            _tileset3 = new TiledTileset("Content/Tile/Decorations.tsx");
-            _tilesetTexture3 = _content.Load<Texture2D>("Tile/Decorations");
-            _tileWidth3 = _tileset3.TileWidth;
-            _tileHeight3 = _tileset3.TileHeight;
-            _tilesetTilesWide3 = _tileset3.Columns;
-            _tilesetTilesHeight3 = _tileset3.TileCount / _tileset3.Columns;
-            _tileset4 = new TiledTileset("Content/Tile/TX Props.tsx");
-            _tilesetTexture4 = _content.Load<Texture2D>("Tile/TX Props");
-            _tileWidth4 = _tileset4.TileWidth;
-            _tileHeight4 = _tileset4.TileHeight;
-            _tilesetTilesWide4 = _tileset4.Columns;
-            _tilesetTilesHeight4 = _tileset4.TileCount / _tileset4.Columns;
-            _tileset5 = new TiledTileset("Content/Tile/houses.tsx");
-            _tilesetTexture5 = _content.Load<Texture2D>("Tile/houses");
-            _tileWidth5 = _tileset5.TileWidth;
-            _tileHeight5 = _tileset5.TileHeight;
-            _tilesetTilesWide5 = _tileset5.Columns;
-            _tilesetTilesHeight5 = _tileset5.TileCount / _tileset5.Columns;
+            map = new TiledMap("Content/Tile/map1.tmx");
+            tilesets = map.GetTiledTilesets("Content/Tile/");
+            tilesetTexture = new Dictionary<int, Texture2D>()
+            {
+                { 0, _content.Load<Texture2D>("Tile/terrain tiles") },
+                { 1, _content.Load<Texture2D>("Tile/waterfalls") },
+                { 2, _content.Load<Texture2D>("Tile/TX Props") },
+                { 3, _content.Load<Texture2D>("Tile/Decorations") },
+                { 4, _content.Load<Texture2D>("Tile/houses") }
+            };
         }
         public void Unload()
         {
@@ -74,52 +58,100 @@ namespace Tower_Defense
 
         }
 
-        public void Draw1(GameTime gameTime)
+        public void Draw(GameTime gameTime, String layersType)
         {
-            for (var i = 0; i < _map.Layers[0].data.Length; i++)
+            var tileLayers = map.Layers.Where(x => x.type == TiledLayerType.TileLayer);
+            switch (layersType)
             {
-                int gid = _map.Layers[0].data[i];
-
-                // Empty tile, do nothing
-                if (gid == 0)
+                case "PATH":
+                    tileLayers = map.Layers.Where(x => x.type == TiledLayerType.TileLayer && x.name == "Main Layer" || x.name == "Sub Layer");
+                    break;
+                case "ACCENT":
+                    tileLayers = map.Layers.Where(x => x.type == TiledLayerType.TileLayer && x.name == "Accent1" || x.name == "Accent2" || x.name == "Accent3");
+                    break;
+                default:
+                    break;
+            }
+            foreach (var layer in tileLayers)
+            {
+                for (var y = 0; y < layer.height; y++)
                 {
-
-                }
-                else
-                {
-                    // Tileset tile ID
-                    // Looking at the exampleTileset.png
-                    // 0 = Blue
-                    // 1 = Green
-                    // 2 = Dark Yellow
-                    // 3 = Magenta
-                    int tileFrame = gid - 1;
-
-                    // Print the tile type into the debug console.
-                    // This assumes only one (1) `tiled tileset` is being used, so getting the first one.
-                    var tile = _map.GetTiledTile(_map.Tilesets[0], _tileset1, gid);
-                    if (tile != null)
+                    for (var x = 0; x < layer.width; x++)
                     {
-                        // This should print "Grass" for each grass tile in the map each draw call
-                        // so six (6) times.
-                        System.Diagnostics.Debug.WriteLine(tile.type);
+                        var index = (y * layer.width) + x;
+                        var gid = layer.data[index];
+                        var tileX = x * map.TileWidth + 16;
+                        var tileY = y * map.TileHeight + 20;
+                        int textureIndex = 0;
+                        if (gid == 0)
+                        {
+                            continue;
+                        }
+                        if (gid >= 1 && gid < 385)
+                        {
+                            textureIndex = 0;
+                        }
+                        if (gid >= 385 && gid < 721)
+                        {
+                            textureIndex = 1;
+                        }
+                        if (gid >= 721 && gid < 1745)
+                        {
+                            textureIndex = 2;
+                        }
+                        if (gid >= 1745 && gid < 2065)
+                        {
+                            textureIndex = 3;
+                        }
+                        if (gid >= 2065)
+                        {
+                            textureIndex = 4;
+                        }
+                        var mapTileset = map.GetTiledMapTileset(gid);
+                        var tileset = tilesets[mapTileset.firstgid];
+                        var rect = map.GetSourceRect(mapTileset, tileset, gid);
+                        var source = new Rectangle(rect.x, rect.y, rect.width, rect.height);
+                        var destination = new Rectangle(tileX, tileY, map.TileWidth, map.TileHeight);
+                        Trans tileTrans = Trans.None;
+                        if (map.IsTileFlippedHorizontal(layer, x, y)) tileTrans |= Trans.Flip_H;
+                        if (map.IsTileFlippedVertical(layer, x, y)) tileTrans |= Trans.Flip_V;
+                        if (map.IsTileFlippedDiagonal(layer, x, y)) tileTrans |= Trans.Flip_D;
+                        SpriteEffects effects = SpriteEffects.None;
+                        double rotation = 0f;
+                        switch (tileTrans)
+                        {
+                            case Trans.Flip_H: effects = SpriteEffects.FlipHorizontally; break;
+                            case Trans.Flip_V: effects = SpriteEffects.FlipVertically; break;
+
+                            case Trans.Rotate_90:
+                                rotation = Math.PI * .5f;
+                                destination.X += map.TileWidth;
+                                break;
+
+                            case Trans.Rotate_180:
+                                rotation = Math.PI;
+                                destination.X += map.TileWidth;
+                                destination.Y += map.TileHeight;
+                                break;
+
+                            case Trans.Rotate_270:
+                                rotation = Math.PI * 3 / 2;
+                                destination.Y += map.TileHeight;
+                                break;
+
+                            case Trans.Rotate_90AndFlip_H:
+                                effects = SpriteEffects.FlipHorizontally;
+                                rotation = Math.PI * .5f;
+                                destination.X += map.TileWidth;
+                                break;
+
+                            default:
+                                break;
+                        }
+                        _spriteBatch.Draw(tilesetTexture[textureIndex], destination, source, Color.White, (float)rotation, Vector2.Zero, effects, 0);
                     }
-
-                    int column = tileFrame % _tilesetTilesWide1;
-                    int row = (int)Math.Floor((double)tileFrame / (double)_tilesetTilesWide1);
-
-                    float x = (i % _map.Width) * _map.TileWidth + 16;
-                    float y = (float)Math.Floor(i / (double)_map.Width) * _map.TileHeight + 20;
-
-                    Rectangle tilesetRec = new Rectangle(_tileWidth1 * column, _tileHeight1 * row, _tileWidth1, _tileHeight1);
-
-                    _spriteBatch.Draw(_tilesetTexture1, new Rectangle((int)x, (int)y, _tileWidth1, _tileHeight1), tilesetRec, Color.White);
                 }
             }
-        }
-        public void Draw2(GameTime gameTime)
-        {
-
         }
     }
 }

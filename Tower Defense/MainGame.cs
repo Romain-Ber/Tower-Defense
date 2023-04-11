@@ -9,17 +9,18 @@ namespace Tower_Defense
 {
     public class MainGame : Game
     {
-        private GraphicsDeviceManager _graphics;
-        private SpriteBatch _spriteBatch;
-        private Map _map;
-        private Overlay _overlay;
+        private GraphicsDeviceManager graphics;
+        public SpriteBatch spriteBatch;
+        private MouseState mouseState;
+        private Map map;
+        private Overlay overlay;
 
         public MainGame()
         {
-            _graphics = new GraphicsDeviceManager(this);
-            _graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-            _graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
-            _graphics.IsFullScreen = true;
+            graphics = new GraphicsDeviceManager(this);
+            graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            graphics.IsFullScreen = true;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
@@ -33,14 +34,15 @@ namespace Tower_Defense
 
         protected override void LoadContent()
         {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _map = new Map(Content, _spriteBatch);
-            _map.Load();
-            _overlay = new Overlay(Content, _spriteBatch);
-            _overlay.Load();
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+            map = new Map(Content, spriteBatch);
+            map.Load();
+            overlay = new Overlay(Content, spriteBatch);
+            overlay.Load();
 
 
             // TODO: use this.Content to load your game content here
+
         }
 
         protected override void Update(GameTime gameTime)
@@ -49,8 +51,8 @@ namespace Tower_Defense
                 Exit();
 
             // TODO: Add your update logic here
-            _map.Update(gameTime);
-            _overlay.Update(gameTime);
+            map.Update(gameTime);
+            overlay.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -59,13 +61,13 @@ namespace Tower_Defense
             GraphicsDevice.Clear(Color.Black);
 
             // TODO: Add your drawing code here
-            _spriteBatch.Begin();
-            _map.Draw(gameTime, "PATH");
+            spriteBatch.Begin();
+            map.Draw(gameTime, "PATH");
 
 
-            _map.Draw(gameTime, "ACCENT");
-            _overlay.Draw(gameTime);
-            _spriteBatch.End();
+            map.Draw(gameTime, "ACCENT");
+            overlay.Draw(gameTime);
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }

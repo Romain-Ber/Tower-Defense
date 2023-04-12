@@ -28,6 +28,8 @@ namespace Tower_Defense
             Rotate_270 = Flip_V | Flip_D,
             Rotate_90AndFlip_H = Flip_H | Flip_V | Flip_D,
         }
+        private float timer;
+        private float waterTimer;
 
         public Map(ContentManager content, SpriteBatch spriteBatch)
         { 
@@ -47,15 +49,38 @@ namespace Tower_Defense
                 { 3, _content.Load<Texture2D>("Tile/Decorations") },
                 { 4, _content.Load<Texture2D>("Tile/houses") }
             };
+            timer = 0;
+            waterTimer = 200f; //time between the different water frames in milliseconds
         }
         public void Unload()
         {
 
         }
 
+        private int WaterFrame()
+        {
+            if (timer < waterTimer)
+            {
+                return 0;
+            }
+            if (timer > waterTimer && timer < waterTimer * 2)
+            {
+                return 1;
+            }
+            if (timer > waterTimer * 2 && timer < waterTimer * 3)
+            {
+                return 2;
+            }
+            if (timer > waterTimer * 3)
+            {
+                timer = 0;
+            }
+            return 0;
+        }
+
         public void Update(GameTime gameTime)
         {
-
+            timer += gameTime.ElapsedGameTime.Milliseconds;
         }
 
         public void Draw(GameTime gameTime, String layersType)
@@ -87,6 +112,11 @@ namespace Tower_Defense
                         {
                             continue;
                         }
+                        var mapTileset = map.GetTiledMapTileset(gid);
+                        var tileset = tilesets[mapTileset.firstgid];
+                        var rect = map.GetSourceRect(mapTileset, tileset, gid);
+                        var source = new Rectangle(rect.x, rect.y, rect.width, rect.height);
+                        var destination = new Rectangle(tileX, tileY, map.TileWidth, map.TileHeight);
                         if (gid >= 1 && gid < 385)
                         {
                             textureIndex = 0;
@@ -94,6 +124,7 @@ namespace Tower_Defense
                         if (gid >= 385 && gid < 721)
                         {
                             textureIndex = 1;
+                            source.Y += WaterFrame() * source.Height * 3;
                         }
                         if (gid >= 721 && gid < 1745)
                         {
@@ -107,11 +138,6 @@ namespace Tower_Defense
                         {
                             textureIndex = 4;
                         }
-                        var mapTileset = map.GetTiledMapTileset(gid);
-                        var tileset = tilesets[mapTileset.firstgid];
-                        var rect = map.GetSourceRect(mapTileset, tileset, gid);
-                        var source = new Rectangle(rect.x, rect.y, rect.width, rect.height);
-                        var destination = new Rectangle(tileX, tileY, map.TileWidth, map.TileHeight);
                         Trans tileTrans = Trans.None;
                         if (map.IsTileFlippedHorizontal(layer, x, y)) tileTrans |= Trans.Flip_H;
                         if (map.IsTileFlippedVertical(layer, x, y)) tileTrans |= Trans.Flip_V;

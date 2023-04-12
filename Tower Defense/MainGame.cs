@@ -11,7 +11,6 @@ namespace Tower_Defense
     {
         private GraphicsDeviceManager graphics;
         public SpriteBatch spriteBatch;
-        private MouseState mouseState;
         private Map map;
         private Overlay overlay;
 

@@ -1,60 +1,51 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Tower_Defense
 {
     public abstract class Button
     {
         private SpriteBatch _spriteBatch;
-        private MouseState lastMouseState;
-        private Vector2 position;
-        private Rectangle bounds;
-        private int buttonWidth, buttonHeight;
-        private Rectangle sourceRect, sourceRectPressed;
-        private bool buttonPressed;
+        private MouseState mouseState, mouseStatePrevious;
+        protected Vector2 position;
+        protected Rectangle bounds;
+        protected int buttonWidth, buttonHeight;
+        protected Rectangle sourceRect, sourceRectPressed;
+        protected bool buttonPressed;
 
-        public Button(SpriteBatch spriteBatch, Vector2 position, Rectangle sourceRect)
+        public Button(SpriteBatch spriteBatch)
         {
             _spriteBatch = spriteBatch;
             buttonWidth = 64;
             buttonHeight = 64;
-            this.position = position;
-            this.sourceRect = sourceRect;
-            this.sourceRectPressed = new Rectangle(sourceRect.X, sourceRect.Y + buttonHeight, sourceRect.Width, sourceRect.Height);
-            this.bounds = new Rectangle((int)position.X, (int)position.Y, buttonWidth, buttonHeight);
-            this.buttonPressed = false;
+            buttonPressed = false;
         }
 
-        public virtual void Update(GameTime gameTime, MouseState mouseState)
+        public virtual void Update(GameTime gameTime)
         {
-            if (bounds.Contains(mouseState.Position) && mouseState.LeftButton == ButtonState.Pressed)
+            mouseState = Mouse.GetState();
+            if (bounds.Contains(mouseState.Position) && mouseState.LeftButton == ButtonState.Pressed && mouseStatePrevious.LeftButton == ButtonState.Released)
             {
                 buttonPressed = true;
             }
-            else
+            if (buttonPressed && mouseState.LeftButton == ButtonState.Released)
             {
                 buttonPressed = false;
             }
-            lastMouseState = mouseState;
+            mouseStatePrevious = mouseState;
         }
 
         public virtual void Draw(GameTime gameTime, Texture2D textureSet)
         {
             if (buttonPressed)
             {
-                _spriteBatch.Draw(textureSet, sourceRectPressed, bounds, Color.White);
+                _spriteBatch.Draw(textureSet, bounds, sourceRectPressed, Color.White);
             }
             else
             {
-                _spriteBatch.Draw(textureSet, sourceRect, bounds, Color.White);
+                _spriteBatch.Draw(textureSet, bounds, sourceRect, Color.White);
             }
         }
     }

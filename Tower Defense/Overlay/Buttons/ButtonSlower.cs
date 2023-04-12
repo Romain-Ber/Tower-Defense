@@ -8,42 +8,23 @@ using System.Threading.Tasks;
 
 namespace Tower_Defense
 {
-    public class ButtonSlower
+    public class ButtonSlower : Button
     {
-        private SpriteBatch _spriteBatch;
-        private Texture2D _textureSet;
-        private Rectangle sourceRect, destRect;
-        public ButtonSlower(SpriteBatch spriteBatch, Texture2D textureSet)
+        public ButtonSlower(SpriteBatch spriteBatch) : base(spriteBatch)
         {
-            _spriteBatch = spriteBatch;
-            _textureSet = textureSet;
+            position = new Vector2(1655, 464);
+            bounds = new Rectangle((int)position.X, (int)position.Y, buttonWidth, buttonHeight);
             sourceRect = new Rectangle(192, 256, 64, 64);
-            destRect = new Rectangle(1655, 464, 64, 64);
+            sourceRectPressed = new Rectangle(sourceRect.X, sourceRect.Y + buttonHeight, sourceRect.Width, sourceRect.Height);
+        }
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
         }
 
-        public void Load()
+        public override void Draw(GameTime gameTime, Texture2D textureSet)
         {
-
-        }
-
-        public void Unload()
-        {
-
-        }
-
-        public void Update(GameTime gameTime)
-        {
-
-        }
-
-        public void OnButtonClick()
-        {
-
-        }
-
-        public void Draw(GameTime gameTime)
-        {
-            _spriteBatch.Draw(_textureSet, destRect, sourceRect, Color.White);
+            base.Draw(gameTime, textureSet);
         }
     }
 }

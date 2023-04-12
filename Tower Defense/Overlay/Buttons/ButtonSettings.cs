@@ -1,29 +1,26 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tower_Defense
 {
     public class ButtonSettings: Button
     {
-        public ButtonSettings(SpriteBatch spriteBatch, Vector2 position, Rectangle sourceRect) : base(spriteBatch, position, sourceRect)
+        public ButtonSettings(SpriteBatch spriteBatch) : base(spriteBatch)
         {
-
+            position = new Vector2(1655, 104);
+            bounds = new Rectangle((int)position.X, (int)position.Y, buttonWidth, buttonHeight);
+            sourceRect = new Rectangle(0, 128, 64, 64);
+            sourceRectPressed = new Rectangle(sourceRect.X, sourceRect.Y + buttonHeight, sourceRect.Width, sourceRect.Height);
         }
-        public override void Update(GameTime gameTime, MouseState mouseState)
+        public override void Update(GameTime gameTime)
         {
-            base.Update(gameTime, mouseState);
+            base.Update(gameTime);
         }
 
-        public virtual void Draw(GameTime gameTime, Texture2D textureSet)
+        public override void Draw(GameTime gameTime, Texture2D textureSet)
         {
             base.Draw(gameTime, textureSet);
         }
     }
-
 }

@@ -3,42 +3,23 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Tower_Defense
 {
-    public class ButtonMusic
+    public class ButtonMusic : Button
     {
-        private SpriteBatch _spriteBatch;
-        private Texture2D _textureSet;
-        private Rectangle sourceRect, destRect;
-        public ButtonMusic(SpriteBatch spriteBatch, Texture2D textureSet)
+        public ButtonMusic(SpriteBatch spriteBatch) : base(spriteBatch)
         {
-            _spriteBatch = spriteBatch;
-            _textureSet = textureSet;
+            position = new Vector2(1722, 104);
+            bounds = new Rectangle((int)position.X, (int)position.Y, buttonWidth, buttonHeight);
             sourceRect = new Rectangle(256, 128, 64, 64);
-            destRect = new Rectangle(1722, 104, 64, 64);
+            sourceRectPressed = new Rectangle(sourceRect.X, sourceRect.Y + buttonHeight, sourceRect.Width, sourceRect.Height);
+        }
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
         }
 
-        public void Load()
+        public override void Draw(GameTime gameTime, Texture2D textureSet)
         {
-
-        }
-
-        public void Unload()
-        {
-
-        }
-
-        public void Update(GameTime gameTime)
-        {
-
-        }
-
-        public void OnButtonClick()
-        {
-
-        }
-
-        public void Draw(GameTime gameTime)
-        {
-            _spriteBatch.Draw(_textureSet, destRect, sourceRect, Color.White);
+            base.Draw(gameTime, textureSet);
         }
     }
 }

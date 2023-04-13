@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tower_Defense.Monsters.Monster
+namespace Tower_Defense
 {
-    internal class MonsterGround1
+    internal class MonsterFlying2
     {
+    
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,32 +7,27 @@ using System.Threading.Tasks;
 
 namespace Tower_Defense
 {
-    public class Monsters
+    public class Wave
     {
-        private Dictionary<string, Texture2D> textureDictionary;
-
-        public Monsters()
+        private List<MonsterBase> monsterList { get; }
+        public Wave()
         {
-
-        }
-        public void Load()
-        {
-
-        }
-
-        public void Unload()
-        {
-
+            monsterList.Add(new MonsterGround1());
         }
 
         public void Update(GameTime gameTime)
         {
-
+            foreach (MonsterBase monster in monsterList)
+            {
+                
+            }
         }
-
         public void Draw(GameTime gameTime)
         {
+            foreach (MonsterBase monster in monsterList)
+            {
 
+            }
         }
     }
 }

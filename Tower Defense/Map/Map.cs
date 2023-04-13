@@ -13,9 +13,11 @@ namespace Tower_Defense
     {
         private ContentManager _content;
         private SpriteBatch _spriteBatch;
-        private TiledMap map;
+        public TiledMap map;
         private Dictionary<int, TiledTileset> tilesets;
         private Dictionary<int, Texture2D> tilesetTexture;
+        public static int[,] groundPath;
+        public static int[,] flyingPath;
         [Flags]
         enum Trans
         {
@@ -28,8 +30,8 @@ namespace Tower_Defense
             Rotate_270 = Flip_V | Flip_D,
             Rotate_90AndFlip_H = Flip_H | Flip_V | Flip_D,
         }
-        private float timer;
-        private float waterTimer;
+        private float timerWaterFrame;
+        private float nextWaterFrame;
 
         public Map(ContentManager content, SpriteBatch spriteBatch)
         { 
@@ -49,8 +51,8 @@ namespace Tower_Defense
                 { 3, _content.Load<Texture2D>("Tile/Decorations") },
                 { 4, _content.Load<Texture2D>("Tile/houses") }
             };
-            timer = 0;
-            waterTimer = 200f; //time between the different water frames in milliseconds
+            timerWaterFrame = 0;
+            nextWaterFrame = 200f; //time between the different water frames in milliseconds
         }
         public void Unload()
         {
@@ -59,28 +61,74 @@ namespace Tower_Defense
 
         private int WaterFrame()
         {
-            if (timer < waterTimer)
+            if (timerWaterFrame < nextWaterFrame)
             {
                 return 0;
             }
-            if (timer > waterTimer && timer < waterTimer * 2)
+            if (timerWaterFrame > nextWaterFrame && timerWaterFrame < nextWaterFrame * 2)
             {
                 return 1;
             }
-            if (timer > waterTimer * 2 && timer < waterTimer * 3)
+            if (timerWaterFrame > nextWaterFrame * 2 && timerWaterFrame < nextWaterFrame * 3)
             {
                 return 2;
             }
-            if (timer > waterTimer * 3)
+            if (timerWaterFrame > nextWaterFrame * 3)
             {
-                timer = 0;
+                timerWaterFrame = 0;
             }
             return 0;
         }
 
+        private void MonsterPath()
+        {
+            var tempMap = map.Layers.Where(x => x.type == TiledLayerType.TileLayer && x.name == "GroundPath");
+            foreach (var layer in tempMap)
+            {
+                groundPath = new int[layer.height, layer.width];
+                for (var y = 0; y < layer.height; y++)
+                {
+                    for (var x = 0; x < layer.width; x++)
+                    {
+                        var index = (y * layer.width) + x;
+                        var gid = layer.data[index];
+                        if (gid == 0)
+                        {
+                            groundPath[x, y] = 0;
+                        }
+                        else
+                        {
+                            groundPath[x, y] = 1;
+                        }
+                    }
+                }
+            }
+            tempMap = map.Layers.Where(x => x.type == TiledLayerType.TileLayer && x.name == "FlyingPath");
+            foreach (var layer in tempMap)
+            {
+                flyingPath = new int[layer.height, layer.width];
+                for (var y = 0; y < layer.height; y++)
+                {
+                    for (var x = 0; x < layer.width; x++)
+                    {
+                        var index = (y * layer.width) + x;
+                        var gid = layer.data[index];
+                        if (gid == 0)
+                        {
+                            groundPath[x, y] = 0;
+                        }
+                        else
+                        {
+                            groundPath[x, y] = 1;
+                        }
+                    }
+                }
+            }
+        }
+
         public void Update(GameTime gameTime)
         {
-            timer += gameTime.ElapsedGameTime.Milliseconds;
+            timerWaterFrame += gameTime.ElapsedGameTime.Milliseconds;
         }
 
         public void Draw(GameTime gameTime, String layersType)

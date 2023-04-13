@@ -15,7 +15,6 @@ namespace Tower_Defense
         private SpriteBatch _spriteBatch;
         private Texture2D overlayTexture;
         private Texture2D buttonsTexture;
-        private ButtonSettings buttonSettings;
         private List<Button> buttonList;
 
         public Overlay(ContentManager content, SpriteBatch spriteBatch)
@@ -41,6 +40,8 @@ namespace Tower_Defense
                 new ButtonSound(_spriteBatch),
                 new ButtonUndo(_spriteBatch)
             };
+
+
         }
         public void Unload()
         {

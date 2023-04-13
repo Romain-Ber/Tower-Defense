@@ -13,6 +13,7 @@ namespace Tower_Defense
         public SpriteBatch spriteBatch;
         private Map map;
         private Overlay overlay;
+        private MonsterMain monsters;
 
         public MainGame()
         {
@@ -26,8 +27,6 @@ namespace Tower_Defense
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
         }
 
@@ -38,19 +37,16 @@ namespace Tower_Defense
             map.Load();
             overlay = new Overlay(Content, spriteBatch);
             overlay.Load();
-
-
-            // TODO: use this.Content to load your game content here
-
+            monsters = new MonsterMain(Content, spriteBatch);
+            monsters.Load();
         }
 
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
-            // TODO: Add your update logic here
             map.Update(gameTime);
+            monsters.Update(gameTime);
             overlay.Update(gameTime);
             base.Update(gameTime);
         }
@@ -59,13 +55,13 @@ namespace Tower_Defense
         {
             GraphicsDevice.Clear(Color.Black);
 
-            // TODO: Add your drawing code here
             spriteBatch.Begin();
+
             map.Draw(gameTime, "PATH");
-
-
+            monsters.Draw(gameTime);
             map.Draw(gameTime, "ACCENT");
             overlay.Draw(gameTime);
+
             spriteBatch.End();
 
             base.Draw(gameTime);

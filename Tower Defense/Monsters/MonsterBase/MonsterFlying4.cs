@@ -6,12 +6,7 @@ using System.Threading.Tasks;
 
 namespace Tower_Defense
 {
-    public class Wave
+    internal class MonsterFlying4
     {
-
-        public Wave()
-        {
-
-        }
     }
 }

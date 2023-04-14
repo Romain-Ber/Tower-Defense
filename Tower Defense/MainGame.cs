@@ -13,7 +13,7 @@ namespace Tower_Defense
         public SpriteBatch spriteBatch;
         private Map map;
         private Overlay overlay;
-        private MonsterMain monsters;
+        private MonsterMain monsterMain;
 
         public MainGame()
         {
@@ -37,8 +37,8 @@ namespace Tower_Defense
             map.Load();
             overlay = new Overlay(Content, spriteBatch);
             overlay.Load();
-            monsters = new MonsterMain(Content, spriteBatch);
-            monsters.Load();
+            monsterMain = new MonsterMain(Content, spriteBatch);
+            monsterMain.Load();
         }
 
         protected override void Update(GameTime gameTime)
@@ -46,7 +46,7 @@ namespace Tower_Defense
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             map.Update(gameTime);
-            monsters.Update(gameTime);
+            monsterMain.Update(gameTime);
             overlay.Update(gameTime);
             base.Update(gameTime);
         }
@@ -58,7 +58,7 @@ namespace Tower_Defense
             spriteBatch.Begin();
 
             map.Draw(gameTime, "PATH");
-            monsters.Draw(gameTime);
+            monsterMain.Draw(gameTime);
             map.Draw(gameTime, "ACCENT");
             overlay.Draw(gameTime);
 

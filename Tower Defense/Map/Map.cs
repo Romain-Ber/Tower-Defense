@@ -16,8 +16,12 @@ namespace Tower_Defense
         public TiledMap map;
         private Dictionary<int, TiledTileset> tilesets;
         private Dictionary<int, Texture2D> tilesetTexture;
-        public static int[,] groundPath;
-        public static int[,] flyingPath;
+        public static string[,] groundPath;
+        public static string[,] flyingPath;
+        public static int mapTileWidth, mapTileHeight;
+        public static int mapOffsetX = 16;
+        public static int mapOffsetY = 20;
+        public static int monsterStartX, monsterStartY;
         [Flags]
         enum Trans
         {
@@ -32,7 +36,7 @@ namespace Tower_Defense
         }
         private float timerWaterFrame;
         private float nextWaterFrame;
-
+        
         public Map(ContentManager content, SpriteBatch spriteBatch)
         { 
             _content = content;
@@ -53,7 +57,96 @@ namespace Tower_Defense
             };
             timerWaterFrame = 0;
             nextWaterFrame = 200f; //time between the different water frames in milliseconds
+            mapTileWidth = 16;
+            mapTileHeight = 16;
+            CreateMonsterPath();
         }
+
+        private void CreateMonsterPath()
+        {
+            //gidStart = 27, gidEnd = 30, gidDown = 51, gidUp = 3, gidRight = 28, gidLeft = 26
+            var tempMap = map.Layers.Where(x => x.type == TiledLayerType.TileLayer && x.name == "GroundPath");
+            foreach (var layer in tempMap)
+            {
+                groundPath = new string[layer.width, layer.height];
+                for (var y = 0; y < layer.height; y++)
+                {
+                    for (var x = 0; x < layer.width; x++)
+                    {
+                        var index = (y * layer.width) + x;
+                        var gid = layer.data[index];
+                        switch (gid)
+                        {
+                            case 0:
+                                groundPath[x, y] = "";
+                                break;
+                            case 27:
+                                groundPath[x, y] = "START";
+                                monsterStartX = x * mapTileWidth + mapOffsetX;
+                                monsterStartY = y * mapTileHeight + mapOffsetY;
+                                break;
+                            case 30:
+                                groundPath[x, y] = "END";
+                                break;
+                            case 3:
+                                groundPath[x, y] = "UP";
+                                break;
+                            case 51:
+                                groundPath[x, y] = "DOWN";
+                                break;
+                            case 26:
+                                groundPath[x, y] = "LEFT";
+                                break;
+                            case 28:
+                                groundPath[x, y] = "RIGHT";
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
+            tempMap = map.Layers.Where(x => x.type == TiledLayerType.TileLayer && x.name == "FlyingPath");
+            foreach (var layer in tempMap)
+            {
+                flyingPath = new string[layer.width, layer.height];
+                for (var y = 0; y < layer.height; y++)
+                {
+                    for (var x = 0; x < layer.width; x++)
+                    {
+                        var index = (y * layer.width) + x;
+                        var gid = layer.data[index];
+                        switch (gid)
+                        {
+                            case 0:
+                                flyingPath[x, y] = "";
+                                break;
+                            case 27:
+                                flyingPath[x, y] = "START";
+                                break;
+                            case 30:
+                                flyingPath[x, y] = "END";
+                                break;
+                            case 51:
+                                flyingPath[x, y] = "DOWN";
+                                break;
+                            case 3:
+                                flyingPath[x, y] = "UP";
+                                break;
+                            case 28:
+                                flyingPath[x, y] = "RIGHT";
+                                break;
+                            case 26:
+                                flyingPath[x, y] = "LEFT";
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+
         public void Unload()
         {
 
@@ -78,52 +171,6 @@ namespace Tower_Defense
                 timerWaterFrame = 0;
             }
             return 0;
-        }
-
-        private void MonsterPath()
-        {
-            var tempMap = map.Layers.Where(x => x.type == TiledLayerType.TileLayer && x.name == "GroundPath");
-            foreach (var layer in tempMap)
-            {
-                groundPath = new int[layer.height, layer.width];
-                for (var y = 0; y < layer.height; y++)
-                {
-                    for (var x = 0; x < layer.width; x++)
-                    {
-                        var index = (y * layer.width) + x;
-                        var gid = layer.data[index];
-                        if (gid == 0)
-                        {
-                            groundPath[x, y] = 0;
-                        }
-                        else
-                        {
-                            groundPath[x, y] = 1;
-                        }
-                    }
-                }
-            }
-            tempMap = map.Layers.Where(x => x.type == TiledLayerType.TileLayer && x.name == "FlyingPath");
-            foreach (var layer in tempMap)
-            {
-                flyingPath = new int[layer.height, layer.width];
-                for (var y = 0; y < layer.height; y++)
-                {
-                    for (var x = 0; x < layer.width; x++)
-                    {
-                        var index = (y * layer.width) + x;
-                        var gid = layer.data[index];
-                        if (gid == 0)
-                        {
-                            groundPath[x, y] = 0;
-                        }
-                        else
-                        {
-                            groundPath[x, y] = 1;
-                        }
-                    }
-                }
-            }
         }
 
         public void Update(GameTime gameTime)
@@ -153,8 +200,8 @@ namespace Tower_Defense
                     {
                         var index = (y * layer.width) + x;
                         var gid = layer.data[index];
-                        var tileX = x * map.TileWidth + 16;
-                        var tileY = y * map.TileHeight + 20;
+                        var tileX = x * map.TileWidth + mapOffsetX;
+                        var tileY = y * map.TileHeight + mapOffsetY;
                         int textureIndex = 0;
                         if (gid == 0)
                         {

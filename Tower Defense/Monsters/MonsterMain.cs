@@ -14,9 +14,10 @@ namespace Tower_Defense
     {
         private ContentManager _content;
         private SpriteBatch _spriteBatch;
-        private Dictionary<int, Texture2D> textureDictionary;
-        private float timerCurrentWave, nextWave;
-        private List<Wave> waveList;
+        public static Dictionary<string, Texture2D> monsterTexture;
+        private List<MonsterBase> monsterList;
+        private float monsterTimer;
+        private int monsterCount; // temps for demo
 
         public MonsterMain(ContentManager content, SpriteBatch spriteBatch)
         {
@@ -25,46 +26,83 @@ namespace Tower_Defense
         }
         public void Load()
         {
-            textureDictionary = new Dictionary<int, Texture2D>()
+            monsterTexture = new Dictionary<string, Texture2D>()
             {
-                { 1, _content.Load<Texture2D>("Monster/Leafbug") },
-                { 2, _content.Load<Texture2D>("Monster/Firebug") },
-                { 3, _content.Load<Texture2D>("Monster/Magma Crab") },
-                { 4, _content.Load<Texture2D>("Monster/Scorpion") },
-                { 5, _content.Load<Texture2D>("Monster/Voidbutterfly") },
-                { 6, _content.Load<Texture2D>("Monster/Flying Locust") },
-                { 7, _content.Load<Texture2D>("Monster/Firewasp") },
-                { 8, _content.Load<Texture2D>("Monster/Clampbeetle") }
+                { "Leafbug", _content.Load<Texture2D>("Monster/Leafbug") },
+                { "Firebug", _content.Load<Texture2D>("Monster/Firebug") },
+                { "MagmaCrab", _content.Load<Texture2D>("Monster/Magma Crab") },
+                { "Scorpion", _content.Load<Texture2D>("Monster/Scorpion") },
+                { "Voidbutterfly", _content.Load<Texture2D>("Monster/Voidbutterfly") },
+                { "FlyingLocust", _content.Load<Texture2D>("Monster/Flying Locust") },
+                { "Firewasp", _content.Load<Texture2D>("Monster/Firewasp") },
+                { "Clampbeetle", _content.Load<Texture2D>("Monster/Clampbeetle") }
             };
-            timerCurrentWave = 0f;
-            nextWave = 30000f;
 
-            //waveList = new List<Wave>()
-            //{
-            //    new Wave()
-            //};
+            monsterList = new List<MonsterBase>
+            {
+                //new Leafbug(_spriteBatch)
+                new Leafbug(_spriteBatch)
+            };
+            monsterTimer = 0;
+
+            monsterCount = 0;
         }
 
         public void Unload()
         {
-            Console.WriteLine(2);
+            
         }
 
         public void Update(GameTime gameTime)
         {
-            timerCurrentWave += gameTime.ElapsedGameTime.Milliseconds;
-            //foreach(Wave wave in waveList)
-            //{
-            //    wave.Update(gameTime);
-            //}
+            monsterTimer += gameTime.ElapsedGameTime.Milliseconds;
+            if (monsterTimer > 3000)
+            {
+                if (monsterCount > 6)
+                {
+                    monsterCount = 0;
+                }
+                else
+                {
+                    monsterCount = monsterCount + 1;
+                }
+                switch (monsterCount)
+                {
+                    case 0:
+                        monsterList.Add(new Clampbeetle(_spriteBatch));
+                        break;
+                    case 1:
+                        monsterList.Add(new MagmaCrab(_spriteBatch));
+                        break;
+                    case 2:
+                        monsterList.Add(new FlyingLocust(_spriteBatch));
+                        break;
+                    case 3:
+                        monsterList.Add(new Scorpion(_spriteBatch));
+                        break;
+                    case 4:
+                        monsterList.Add(new Voidbutterfly(_spriteBatch));
+                        break;
+                    case 5:
+                        monsterList.Add(new Leafbug(_spriteBatch));
+                        break;
+                    default:
+                        break;
+                }
+                monsterTimer = 0;
+            }
+            foreach (MonsterBase monster in monsterList)
+            {
+                monster.Update(gameTime);
+            }
         }
 
         public void Draw(GameTime gameTime)
         {
-            //foreach (Wave wave in waveList)
-            //{
-            //    wave.Update(gameTime);
-            //}
+            foreach (MonsterBase monster in monsterList)
+            {
+                monster.Draw(gameTime);
+            }
         }
     }
 }

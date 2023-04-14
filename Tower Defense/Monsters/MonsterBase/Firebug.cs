@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Tower_Defense
 {
-    internal class MonsterFlying2
+    internal class Firebug
     {
-    
     }
 }

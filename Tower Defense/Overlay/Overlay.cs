@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Tower_Defense
 {
@@ -16,6 +15,9 @@ namespace Tower_Defense
         private Texture2D overlayTexture;
         private Texture2D buttonsTexture;
         private List<Button> buttonList;
+        private SpriteFont cinzelBoldFont;
+
+        public static int playerHealth;
 
         public Overlay(ContentManager content, SpriteBatch spriteBatch)
         {
@@ -27,7 +29,7 @@ namespace Tower_Defense
         {
             overlayTexture = _content.Load<Texture2D>("GUI/GUI16");
             buttonsTexture = _content.Load<Texture2D>("GUI/buttons");
-            //buttonSettings = new ButtonSettings(_spriteBatch);
+            cinzelBoldFont = _content.Load<SpriteFont>("Cinzel-Bold");
             buttonList = new List<Button>
             {
                 new ButtonBook(_spriteBatch),
@@ -41,7 +43,7 @@ namespace Tower_Defense
                 new ButtonUndo(_spriteBatch)
             };
 
-
+            playerHealth = 20;
         }
         public void Unload()
         {
@@ -65,6 +67,38 @@ namespace Tower_Defense
             {
                 button.Draw(gameTime, buttonsTexture);
             }
+
+
+            //Overlay Text
+            int spacing = 20;
+            int textX = 1640;
+            int textY = 640;
+
+            string playerHealthCountText = $"Health Points: {playerHealth}";
+            Vector2 playerHealthCountVector1 = new Vector2(textX, textY);
+            _spriteBatch.DrawString(cinzelBoldFont, playerHealthCountText, playerHealthCountVector1, Color.BlanchedAlmond);
+
+            textY += spacing;
+            string waveSpeedText;
+            if (MainGame.gameSpeedIndex == 0) { waveSpeedText = "Game Speed: PAUSED"; }
+            else { waveSpeedText = $"Game Speed: {MainGame.gameSpeedDictionary[MainGame.gameSpeedIndex].ToString()}X"; }
+            Vector2 waveSpeedVector1 = new Vector2(textX, textY);
+            _spriteBatch.DrawString(cinzelBoldFont, waveSpeedText, waveSpeedVector1, Color.BlanchedAlmond);
+
+            textY += spacing;
+
+            textY += spacing;
+            string waveNumberText = "Current Level: 1";
+            Vector2 waveNumberVector1 = new Vector2(textX, textY);
+            _spriteBatch.DrawString(cinzelBoldFont, waveNumberText, waveNumberVector1, Color.BlanchedAlmond);
+
+            textY += spacing;
+            
+            string monsterCountText = $"Ennemy Count: {MonsterMain.monsterList.Count}";
+            Vector2 monsterCountVector = new Vector2(textX, textY);
+            _spriteBatch.DrawString(cinzelBoldFont, monsterCountText, monsterCountVector, Color.BlanchedAlmond);
+
+
         }
     }
 }

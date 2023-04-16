@@ -7,7 +7,7 @@ namespace Tower_Defense
 {
     public abstract class Button
     {
-        private SpriteBatch _spriteBatch;
+        protected SpriteBatch _spriteBatch;
         private MouseState mouseState, mouseStatePrevious;
         protected Vector2 position;
         protected Rectangle bounds;
@@ -30,16 +30,26 @@ namespace Tower_Defense
             {
                 buttonPressed = true;
             }
-            if (buttonPressed && mouseState.LeftButton == ButtonState.Released)
+            if (bounds.Contains(mouseState.Position) && buttonPressed && mouseState.LeftButton == ButtonState.Released)
+            {
+                OnClick();
+                buttonPressed = false;
+            }
+            else if (buttonPressed && mouseState.LeftButton == ButtonState.Released)
             {
                 buttonPressed = false;
             }
             mouseStatePrevious = mouseState;
         }
 
+        public virtual void OnClick()
+        {
+
+        }
+
         public virtual void Draw(GameTime gameTime, Texture2D textureSet)
         {
-            if (buttonPressed)
+            if (bounds.Contains(mouseState.Position) && buttonPressed)
             {
                 _spriteBatch.Draw(textureSet, bounds, sourceRectPressed, Color.White);
             }

@@ -31,8 +31,8 @@ namespace Tower_Defense
 
             IsGround = true;
             lastDirection = "DOWN";
-            sourceRect = new Rectangle(frameCurrent * monsterWidth + frameOffsetX * monsterWidth + frameOffsetX,
-                                       frameRow * monsterHeight + frameOffsetY * monsterHeight + frameOffsetY,
+            sourceRect = new Rectangle(frameCurrent * monsterWidth + (frameCurrent * 2 + 1) * frameOffsetX,
+                                       frameRow * monsterHeight + (frameRow * 2 + 1) * frameOffsetY,
                                        monsterWidth,
                                        monsterHeight);
 

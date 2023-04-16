@@ -175,7 +175,7 @@ namespace Tower_Defense
 
         public void Update(GameTime gameTime)
         {
-            timerWaterFrame += gameTime.ElapsedGameTime.Milliseconds;
+            timerWaterFrame += gameTime.ElapsedGameTime.Milliseconds * MainGame.gameSpeedDictionary[MainGame.gameSpeedIndex];
         }
 
         public void Draw(GameTime gameTime, String layersType)
@@ -184,10 +184,15 @@ namespace Tower_Defense
             switch (layersType)
             {
                 case "PATH":
-                    tileLayers = map.Layers.Where(x => x.type == TiledLayerType.TileLayer && x.name == "Main Layer" || x.name == "Sub Layer");
+                    tileLayers = map.Layers.Where(x => x.type == TiledLayerType.TileLayer && x.name == "Main Layer" ||
+                                                                                             x.name == "Sub Layer" ||
+                                                                                             x.name == "Accent1" ||
+                                                                                             x.name == "Accent2" ||
+                                                                                             x.name == "Accent3");
                     break;
                 case "ACCENT":
-                    tileLayers = map.Layers.Where(x => x.type == TiledLayerType.TileLayer && x.name == "Accent1" || x.name == "Accent2" || x.name == "Accent3");
+                    tileLayers = map.Layers.Where(x => x.type == TiledLayerType.TileLayer && x.name == "Overlayer1" ||
+                                                                                             x.name == "Overlayer2");
                     break;
                 default:
                     break;

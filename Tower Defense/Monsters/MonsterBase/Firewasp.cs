@@ -30,8 +30,8 @@ namespace Tower_Defense
 
             IsGround = false;
             lastDirection = "RIGHT";
-            sourceRect = new Rectangle(frameCurrent * monsterWidth + frameCurrent * frameOffsetX + frameOffsetX,
-                                       frameRow * monsterHeight + frameRow * frameOffsetY + frameOffsetY,
+            sourceRect = new Rectangle(frameCurrent * monsterWidth + (frameCurrent * 2 + 1) * frameOffsetX,
+                                       frameRow * monsterHeight + (frameRow * 2 + 1) * frameOffsetY,
                                        monsterWidth,
                                        monsterHeight);
             factorX = 1;
@@ -40,7 +40,6 @@ namespace Tower_Defense
 
         public override void Update(GameTime gameTime)
         {
-            Debug.WriteLine($"x={sourceRect.X}, y={sourceRect.Y}, w={sourceRect.Width}, h={sourceRect.Height}");
             base.Update(gameTime);
         }
 

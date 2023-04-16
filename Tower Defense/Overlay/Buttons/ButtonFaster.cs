@@ -21,6 +21,13 @@ namespace Tower_Defense
         {
             base.Update(gameTime);
         }
+        public override void OnClick()
+        {
+            if (MainGame.gameSpeedIndex < MainGame.gameSpeedDictionary.Count - 1 && MainGame.gameSpeedIndex != 0)
+            {
+                MainGame.gameSpeedIndex++;
+            }
+        }
 
         public override void Draw(GameTime gameTime, Texture2D textureSet)
         {

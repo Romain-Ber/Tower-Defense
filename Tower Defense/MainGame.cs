@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 using System.Drawing.Text;
 using TiledCS;
 
@@ -14,6 +15,9 @@ namespace Tower_Defense
         private Map map;
         private Overlay overlay;
         private MonsterMain monsterMain;
+
+        public static Dictionary<int, float> gameSpeedDictionary;
+        public static int gameSpeedIndex;
 
         public MainGame()
         {
@@ -39,6 +43,18 @@ namespace Tower_Defense
             overlay.Load();
             monsterMain = new MonsterMain(Content, spriteBatch);
             monsterMain.Load();
+            gameSpeedDictionary = new Dictionary<int, float>
+            {
+                {0, 0f },
+                {1, 0.1f },
+                {2, 0.25f },
+                {3, 0.5f },
+                {4, 1f },
+                {5, 2f },
+                {6, 4f },
+                {7, 8f }
+            };
+            gameSpeedIndex = 4;
         }
 
         protected override void Update(GameTime gameTime)

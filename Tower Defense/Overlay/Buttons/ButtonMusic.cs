@@ -16,6 +16,10 @@ namespace Tower_Defense
         {
             base.Update(gameTime);
         }
+        public override void OnClick()
+        {
+
+        }
 
         public override void Draw(GameTime gameTime, Texture2D textureSet)
         {

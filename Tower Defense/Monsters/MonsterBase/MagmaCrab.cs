@@ -29,8 +29,8 @@ namespace Tower_Defense
 
             IsGround = true;
             lastDirection = "DOWN";
-            sourceRect = new Rectangle(frameCurrent * monsterWidth + frameOffsetX * monsterWidth + frameOffsetX,
-                                       frameRow * monsterHeight + frameOffsetY * monsterHeight + frameOffsetY,
+            sourceRect = new Rectangle(frameCurrent * monsterWidth + (frameCurrent * 2 + 1) * frameOffsetX,
+                                       frameRow * monsterHeight + (frameRow * 2 + 1) * frameOffsetY,
                                        monsterWidth,
                                        monsterHeight);
 
@@ -70,11 +70,13 @@ namespace Tower_Defense
                     break;
                 case "END":
                     factorX = 0; factorY = 0;
+                    reachedVillage = true;
                     break;
                 default:
                     break;
             }
-            position = new Vector2(position.X + factorX * monsterSpeed, position.Y + factorY * monsterSpeed);
+            position = new Vector2(position.X + factorX * monsterSpeed * MainGame.gameSpeedDictionary[MainGame.gameSpeedIndex],
+                       position.Y + factorY * monsterSpeed * MainGame.gameSpeedDictionary[MainGame.gameSpeedIndex]);
         }
 
         public override void UpdateFrame()

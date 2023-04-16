@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,15 +9,30 @@ namespace Tower_Defense
 {
     public class Levels
     {
-        public Dictionary<int, List<MonsterBase>> levelStructure { get; }
+        public static Dictionary<int, List<string>> level;
         public Levels()
         {
-            
-        }
-
-        public void levelContent()
-        {
-
+            level = new Dictionary<int, List<string>>();
+            level.Add(0, new List<string> { "Leafbug",
+                                            "Leafbug",
+                                            "Leafbug",
+                                            "Leafbug",
+                                            "Leafbug",
+                                            "Leafbug",
+                                            "Leafbug",
+                                            "Leafbug",
+                                            "Leafbug",
+                                            "Leafbug" });
+            level.Add(1, new List<string> { "Leafbug",
+                                            "Leafbug",
+                                            "Leafbug",
+                                            "Leafbug",
+                                            "Leafbug",
+                                            "Leafbug",
+                                            "Leafbug",
+                                            "Leafbug",
+                                            "Leafbug",
+                                            "Leafbug" });
         }
     }
 }

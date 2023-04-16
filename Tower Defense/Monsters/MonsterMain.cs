@@ -15,7 +15,7 @@ namespace Tower_Defense
         private ContentManager _content;
         private SpriteBatch _spriteBatch;
         public static Dictionary<string, Texture2D> monsterTexture;
-        private List<MonsterBase> monsterList;
+        public static List<MonsterBase> monsterList;
         private float monsterTimer;
         private int monsterCount; // temps for demo
 
@@ -40,7 +40,6 @@ namespace Tower_Defense
 
             monsterList = new List<MonsterBase>
             {
-                //new Leafbug(_spriteBatch)
                 new Leafbug(_spriteBatch)
             };
             monsterTimer = 0;
@@ -55,10 +54,10 @@ namespace Tower_Defense
 
         public void Update(GameTime gameTime)
         {
-            monsterTimer += gameTime.ElapsedGameTime.Milliseconds;
-            if (monsterTimer > 3000)
+            monsterTimer += gameTime.ElapsedGameTime.Milliseconds * MainGame.gameSpeedDictionary[MainGame.gameSpeedIndex];
+            if (monsterTimer > 1500)
             {
-                if (monsterCount > 6)
+                if (monsterCount > 8)
                 {
                     monsterCount = 0;
                 }
@@ -86,21 +85,39 @@ namespace Tower_Defense
                     case 5:
                         monsterList.Add(new Leafbug(_spriteBatch));
                         break;
+                    case 6:
+                        monsterList.Add(new Firewasp(_spriteBatch));
+                        break;
+                    case 7:
+                        monsterList.Add(new Firebug(_spriteBatch));
+                        break;
                     default:
                         break;
                 }
                 monsterTimer = 0;
             }
-            foreach (MonsterBase monster in monsterList)
+            UpdateMonsters(gameTime);
+        }
+
+        public void UpdateMonsters(GameTime gameTime)
+        {
+            for (int i = monsterList.Count - 1; i >= 0; i--)
             {
+                MonsterBase monster = monsterList[i];
                 monster.Update(gameTime);
+                if (monster.reachedVillage)
+                {
+                    monsterList.RemoveAt(i);
+                    Overlay.playerHealth--;
+                }
             }
         }
 
         public void Draw(GameTime gameTime)
         {
-            foreach (MonsterBase monster in monsterList)
+            for (int i = monsterList.Count - 1; i >= 0; i--)
             {
+                MonsterBase monster = monsterList[i];
                 monster.Draw(gameTime);
             }
         }

@@ -26,6 +26,7 @@ namespace Tower_Defense
         protected string lastDirection;
         protected int factorX, factorY;
         protected string name;
+        public bool reachedVillage;
 
         public MonsterBase(SpriteBatch spriteBatch)
         {
@@ -36,11 +37,12 @@ namespace Tower_Defense
             frameTimer = 0f;
             frameFlip = SpriteEffects.None;
             position = new Vector2(Map.monsterStartX, Map.monsterStartY);
+            reachedVillage = false;
         }
 
         public virtual void Update(GameTime gameTime)
         {
-            frameTimer += gameTime.ElapsedGameTime.Milliseconds;
+            frameTimer += gameTime.ElapsedGameTime.Milliseconds * MainGame.gameSpeedDictionary[MainGame.gameSpeedIndex];
             Direction();
             Move();
             UpdateFrame();
@@ -90,11 +92,13 @@ namespace Tower_Defense
                     break;
                 case "END":
                     factorX = 0; factorY = 0;
+                    reachedVillage = true;
                     break;
                 default:
                     break;
             }
-            position = new Vector2(position.X + factorX * monsterSpeed, position.Y + factorY * monsterSpeed);
+            position = new Vector2(position.X + factorX * monsterSpeed * MainGame.gameSpeedDictionary[MainGame.gameSpeedIndex], 
+                                   position.Y + factorY * monsterSpeed * MainGame.gameSpeedDictionary[MainGame.gameSpeedIndex]);
         }
 
         public virtual void UpdateFrame()
@@ -111,8 +115,8 @@ namespace Tower_Defense
                 }
                 frameTimer = 0;
             }
-            sourceRect = new Rectangle(frameCurrent * monsterWidth + (frameCurrent + 1) * frameOffsetX,
-                                       frameRow * monsterHeight + (frameRow + 1) * frameOffsetY,
+            sourceRect = new Rectangle(frameCurrent * monsterWidth + (frameCurrent * 2 + 1) * frameOffsetX,
+                                       frameRow * monsterHeight + (frameRow * 2 + 1) * frameOffsetY,
                                        monsterWidth,
                                        monsterHeight);
         }

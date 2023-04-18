@@ -18,6 +18,7 @@ namespace Tower_Defense
         private Dictionary<int, Texture2D> tilesetTexture;
         public static string[,] groundPath;
         public static string[,] flyingPath;
+        public static int[,] towerSlots;
         public static int mapTileWidth, mapTileHeight;
         public static int mapOffsetX = 16;
         public static int mapOffsetY = 20;
@@ -60,6 +61,25 @@ namespace Tower_Defense
             mapTileWidth = 16;
             mapTileHeight = 16;
             CreateMonsterPath();
+            CreateTowerSlots();
+        }
+
+        private void CreateTowerSlots()
+        {
+            var tempMap = map.Layers.Where(x => x.type == TiledLayerType.TileLayer && x.name == "TowerSlots");
+            foreach (var layer in tempMap)
+            {
+                towerSlots = new int[layer.width, layer.height];
+                for (var y = 0; y < layer.height; y++)
+                {
+                    for (var x = 0; x < layer.width; x++)
+                    {
+                        var index = (y * layer.width) + x;
+                        var gid = layer.data[index];
+                        if (gid == 27) towerSlots[x, y] = 1;
+                    }
+                }
+            }
         }
 
         private void CreateMonsterPath()

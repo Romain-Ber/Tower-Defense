@@ -15,7 +15,9 @@ namespace Tower_Defense
         private Texture2D overlayTexture;
         private Texture2D buttonsTexture;
         private List<Button> buttonList;
-        private SpriteFont cinzelBoldFont;
+        public static SpriteFont cinzelBoldFont;
+
+        private Book book;
 
         public static int playerHealth;
 
@@ -43,6 +45,8 @@ namespace Tower_Defense
                 new ButtonUndo(_spriteBatch)
             };
 
+            book = new Book(_content, _spriteBatch); book.Load();
+
             playerHealth = 20;
         }
         public void Unload()
@@ -52,22 +56,23 @@ namespace Tower_Defense
 
         public void Update(GameTime gameTime)
         {
-            //buttonSettings.Update(gameTime);
             foreach(var button in buttonList)
             {
                 button.Update(gameTime);
             }
+
+            book.Update(gameTime);
         }
 
         public void Draw(GameTime gameTime)
         {
             _spriteBatch.Draw(overlayTexture, new Vector2(0, 0), Color.White);
-            //buttonSettings.Draw(gameTime, buttonsTexture);
             foreach(var button in buttonList)
             {
                 button.Draw(gameTime, buttonsTexture);
             }
 
+            book.Draw(gameTime);
 
             //Overlay Text
             int spacing = 20;

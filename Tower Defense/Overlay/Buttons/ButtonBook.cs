@@ -24,7 +24,11 @@ namespace Tower_Defense
 
         public override void OnClick()
         {
-
+            if (Book.IsBookOpen == false)
+            {
+                Book.frameStart = 0; Book.frameEnd = 5; Book.frameCurrent = Book.frameStart;
+            }
+            Book.IsBookOpen = !Book.IsBookOpen;
         }
 
         public override void Draw(GameTime gameTime, Texture2D textureSet)

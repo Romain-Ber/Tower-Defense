@@ -16,8 +16,16 @@ namespace Tower_Defense
         private SpriteBatch _spriteBatch;
         public static Dictionary<string, Texture2D> monsterTexture;
         public static List<MonsterBase> monsterList;
-        private float monsterTimer;
+
+        private List<string> waveContent;
+        private int levelIndex;
+
+        private float waveTimer;
+        private float waveInterval;
+        private float spawnInterval;
+
         private int monsterCount; // temps for demo
+
 
         public MonsterMain(ContentManager content, SpriteBatch spriteBatch)
         {
@@ -40,11 +48,15 @@ namespace Tower_Defense
 
             monsterList = new List<MonsterBase>
             {
-                new Leafbug(_spriteBatch)
+                //new Leafbug(_spriteBatch)
             };
-            monsterTimer = 0;
+            waveTimer = 0;
+            waveInterval = 45000;
 
             monsterCount = 0;
+
+            levelIndex = 0;
+
         }
 
         public void Unload()
@@ -54,49 +66,59 @@ namespace Tower_Defense
 
         public void Update(GameTime gameTime)
         {
-            monsterTimer += gameTime.ElapsedGameTime.Milliseconds * MainGame.gameSpeedDictionary[MainGame.gameSpeedIndex];
-            if (monsterTimer > 1500)
-            {
-                if (monsterCount > 8)
-                {
-                    monsterCount = 0;
-                }
-                else
-                {
-                    monsterCount = monsterCount + 1;
-                }
-                switch (monsterCount)
-                {
-                    case 0:
-                        monsterList.Add(new Clampbeetle(_spriteBatch));
-                        break;
-                    case 1:
-                        monsterList.Add(new MagmaCrab(_spriteBatch));
-                        break;
-                    case 2:
-                        monsterList.Add(new FlyingLocust(_spriteBatch));
-                        break;
-                    case 3:
-                        monsterList.Add(new Scorpion(_spriteBatch));
-                        break;
-                    case 4:
-                        monsterList.Add(new Voidbutterfly(_spriteBatch));
-                        break;
-                    case 5:
-                        monsterList.Add(new Leafbug(_spriteBatch));
-                        break;
-                    case 6:
-                        monsterList.Add(new Firewasp(_spriteBatch));
-                        break;
-                    case 7:
-                        monsterList.Add(new Firebug(_spriteBatch));
-                        break;
-                    default:
-                        break;
-                }
-                monsterTimer = 0;
-            }
+            waveTimer += gameTime.ElapsedGameTime.Milliseconds * MainGame.gameSpeedDictionary[MainGame.gameSpeedIndex];
+            AddWave();
             UpdateMonsters(gameTime);
+        }
+
+        public void AddWave()
+        {
+            if (waveTimer > waveInterval && levelIndex < Levels.levelContent.Count)
+            {
+                spawnInterval = (float)(waveInterval / 1.5) / Levels.levelContent[levelIndex].Count;
+                waveContent = new List<string>(Levels.levelContent[levelIndex]);
+                levelIndex++;
+            }
+            if (waveContent != null && waveContent.Count > 0)
+            {
+                for (int i = waveContent.Count - 1; i >= 0; i--)
+                {
+                    if (waveTimer > spawnInterval)
+                    {
+                        switch (waveContent[i])
+                        {
+                            case "Clampbeetle":
+                                monsterList.Add(new Clampbeetle(_spriteBatch));
+                                break;
+                            case "Firebug":
+                                monsterList.Add(new Firebug(_spriteBatch));
+                                break;
+                            case "Firewasp":
+                                monsterList.Add(new Firewasp(_spriteBatch));
+                                break;
+                            case "FlyingLocust":
+                                monsterList.Add(new FlyingLocust(_spriteBatch));
+                                break;
+                            case "Leafbug":
+                                monsterList.Add(new Leafbug(_spriteBatch));
+                                break;
+                            case "MagmaCrab":
+                                monsterList.Add(new MagmaCrab(_spriteBatch));
+                                break;
+                            case "Scorpion":
+                                monsterList.Add(new Scorpion(_spriteBatch));
+                                break;
+                            case "Voidbutterfly":
+                                monsterList.Add(new Voidbutterfly(_spriteBatch));
+                                break;
+                            default:
+                                break;
+                        }
+                        waveContent.RemoveAt(i);
+                        waveTimer = 0;
+                    }
+                }
+            }
         }
 
         public void UpdateMonsters(GameTime gameTime)
@@ -120,6 +142,16 @@ namespace Tower_Defense
                 MonsterBase monster = monsterList[i];
                 monster.Draw(gameTime);
             }
+
+            string gameTimerText = $"Game Time: {waveTimer / 1000}";
+            Vector2 monsterCountVector = new Vector2(32, 32);
+            _spriteBatch.DrawString(Overlay.cinzelBoldFont, gameTimerText, monsterCountVector, Color.BlanchedAlmond);
+
+            string dataText = $"Wave: {levelIndex} / {Levels.levelContent.Count}";
+            Vector2 dataVector = new Vector2(48, 48);
+            _spriteBatch.DrawString(Overlay.cinzelBoldFont, dataText, dataVector, Color.BlanchedAlmond);
+
+
         }
     }
 }

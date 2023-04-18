@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing.Text;
 using TiledCS;
 
@@ -15,9 +16,12 @@ namespace Tower_Defense
         private Map map;
         private Overlay overlay;
         private MonsterMain monsterMain;
+        private TowerMain towerMain;
 
         public static Dictionary<int, float> gameSpeedDictionary;
         public static int gameSpeedIndex;
+
+        public static int screenWidth, screenHeight;
 
         public MainGame()
         {
@@ -25,6 +29,7 @@ namespace Tower_Defense
             graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
             graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             graphics.IsFullScreen = true;
+            graphics.GraphicsProfile = GraphicsProfile.HiDef; //necessary to treat large sized textures >4096px
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
@@ -37,12 +42,11 @@ namespace Tower_Defense
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            map = new Map(Content, spriteBatch);
-            map.Load();
-            overlay = new Overlay(Content, spriteBatch);
-            overlay.Load();
-            monsterMain = new MonsterMain(Content, spriteBatch);
-            monsterMain.Load();
+            map = new Map(Content, spriteBatch); map.Load();
+            overlay = new Overlay(Content, spriteBatch); overlay.Load();
+            monsterMain = new MonsterMain(Content, spriteBatch); monsterMain.Load();
+            towerMain = new TowerMain(Content, spriteBatch); towerMain.Load();
+
             gameSpeedDictionary = new Dictionary<int, float>
             {
                 {0, 0f },
@@ -55,6 +59,9 @@ namespace Tower_Defense
                 {7, 8f }
             };
             gameSpeedIndex = 4;
+
+            screenWidth = graphics.PreferredBackBufferWidth;
+            screenHeight = graphics.PreferredBackBufferHeight;
         }
 
         protected override void Update(GameTime gameTime)
@@ -63,6 +70,7 @@ namespace Tower_Defense
                 Exit();
             map.Update(gameTime);
             monsterMain.Update(gameTime);
+            towerMain.Update(gameTime);
             overlay.Update(gameTime);
             base.Update(gameTime);
         }
@@ -71,15 +79,16 @@ namespace Tower_Defense
         {
             GraphicsDevice.Clear(Color.Black);
 
-            spriteBatch.Begin();
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
             map.Draw(gameTime, "PATH");
             monsterMain.Draw(gameTime);
             map.Draw(gameTime, "ACCENT");
+            towerMain.Draw(gameTime);
             overlay.Draw(gameTime);
 
-            spriteBatch.End();
 
+            spriteBatch.End();
             base.Draw(gameTime);
         }
     }

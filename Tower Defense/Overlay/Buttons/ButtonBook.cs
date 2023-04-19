@@ -26,7 +26,7 @@ namespace Tower_Defense
         {
             if (Book.IsBookOpen == false)
             {
-                Book.frameStart = 0; Book.frameEnd = 5; Book.frameCurrent = Book.frameStart;
+                Book.bookOpened = false; Book.frameCount = 0;
             }
             Book.IsBookOpen = !Book.IsBookOpen;
         }

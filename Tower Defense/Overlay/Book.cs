@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace Tower_Defense
 {
@@ -28,11 +27,11 @@ namespace Tower_Defense
         private int frameWidth, frameHeight;
         private float frameTimer;
 
+        private List<Tab> tabList;
         private Texture2D tabTexture;
-        private Dictionary<int, Vector2> tabPos;
-        private Dictionary<int, Rectangle> tabSource;
-        private float tabFrameTimer, tabIntervalTimer;
-        private bool tabDisplayed;
+        private int tabNumber;
+        private bool creatingTabs;
+        private float tabTimer, tabTimerInterval;
 
         public static bool bookOpened, bookClosed;
         private bool bookRight, bookLeft;
@@ -63,7 +62,7 @@ namespace Tower_Defense
             rectPageRight = new Rectangle((int)posRight.X, (int)posRight.Y, (int)(frameWidth * scale), (int)(frameHeight * scale));
 
             textureRect = new Dictionary<int, Rectangle>();
-            for(int i = 0; i < frameMax; i++)
+            for (int i = 0; i < frameMax; i++)
             {
                 textureRect[i] = new Rectangle(i * frameWidth, 0, frameWidth, frameHeight);
             }
@@ -81,15 +80,9 @@ namespace Tower_Defense
 
             IsBookOpen = false;
 
-            for (int i = 0; i < 8; i++)
-            {
-                tabSource[i] = new Rectangle(0, 0, 0, 0);
-            }
-            for (int i = 0; i < 8; i++)
-            {
-                tabPos[i] = new Vector2(1000, i * (78+20) + 200);
-            }
-            tabDisplayed = false;
+            tabList = new List<Tab>();
+            tabNumber = 0;
+            tabTimer = 0; tabTimerInterval = 150f;
         }
 
         public void Update(GameTime gameTime)
@@ -98,6 +91,10 @@ namespace Tower_Defense
             {
                 UpdateBookFrame(gameTime);
                 CheckPageAction(gameTime);
+                foreach (Tab tab in tabList)
+                {
+                    tab.Update(gameTime);
+                }
             }
         }
 
@@ -146,10 +143,10 @@ namespace Tower_Defense
             {
                 BookOpening(100f);
             }
-            if (bookOpened && tabDisplayed == false)
+            if (creatingTabs)
             {
-                tabFrameTimer += gameTime.ElapsedGameTime.Milliseconds;
-                DisplayTabs(16f);
+                tabTimer += gameTime.ElapsedGameTime.Milliseconds;
+                CreateTabs();
             }
             if (bookFlip > 0)
             {
@@ -206,13 +203,15 @@ namespace Tower_Defense
                         bookOpened = true;
                         frameCount = -1;
                         bookFlip = 5;
+                        creatingTabs = true;
+
                         break;
                     default:
                         break;
                 }
                 frameCount++;
                 frameTimer = 0;
-                
+
             }
         }
 
@@ -250,6 +249,8 @@ namespace Tower_Defense
                         IsBookOpen = false;
                         frameCount = -1;
                         bookFlip = 0;
+                        tabList.Clear();
+                        tabNumber = 0;
                         break;
                     default:
                         break;
@@ -309,6 +310,7 @@ namespace Tower_Defense
                         frameCount = -1;
                         bookRight = false;
                         if (bookFlip > 0) bookFlip--;
+
                         break;
                     default:
                         break;
@@ -377,11 +379,13 @@ namespace Tower_Defense
             }
         }
 
-        public void DisplayTabs(float frameSpeed)
+        public void CreateTabs()
         {
-            if (tabFrameTimer > frameSpeed)
+            if (tabTimer > tabTimerInterval && tabNumber < 8)
             {
-
+                tabList.Add(new Tab(_spriteBatch, tabTexture, tabNumber));
+                tabNumber++;
+                tabTimer = 0;
             }
         }
 
@@ -395,12 +399,10 @@ namespace Tower_Defense
                 _spriteBatch.Draw(bookTexture, posLeft, sourceRectLeftTop, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
                 _spriteBatch.Draw(bookTexture, posRight, sourceRectRightTop, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
 
-                for (int i = 0; i < 8; i++)
+                foreach (Tab tab in tabList)
                 {
-                    _spriteBatch.Draw(tabTexture, tabPos[i], tabSource[i], Color.White);
+                    tab.Draw(gameTime);
                 }
-
-
 
 
 

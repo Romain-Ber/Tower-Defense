@@ -26,9 +26,14 @@ namespace Tower_Defense
         {
             if (Book.IsBookOpen == false)
             {
-                Book.bookOpened = false; Book.frameCount = 0;
+                Book.bookOpened = false; Book.bookClosed = false;
+                Book.IsBookOpen = true;
             }
-            Book.IsBookOpen = !Book.IsBookOpen;
+            else if (Book.IsBookOpen == true && Book.bookClosed == false && Book.bookFlip == 0)
+            {
+                Book.bookFlip = 5;
+                Book.bookClosed = true;
+            }
         }
 
         public override void Draw(GameTime gameTime, Texture2D textureSet)

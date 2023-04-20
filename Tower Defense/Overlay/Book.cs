@@ -22,23 +22,25 @@ namespace Tower_Defense
         private Texture2D bookTexture;
         private Dictionary<int, Rectangle> textureRect;
         private Rectangle sourceRectLeftBottom, sourceRectRightBottom, sourceRectLeftTop, sourceRectRightTop;
-
         private Vector2 posLeft, posRight;
         private float scale;
-        private int frameMax;
-        public static int frameStart, frameEnd, frameCount;
+        private int frameMax, frameCount;
         private int frameWidth, frameHeight;
         private float frameTimer;
 
-        public static bool bookOpened, bookClosed;
-        private int bookFlipOpen, bookFlipClose;
+        private Texture2D tabTexture;
+        private Dictionary<int, Vector2> tabPos;
+        private Dictionary<int, Rectangle> tabSource;
+        private float tabFrameTimer, tabIntervalTimer;
+        private bool tabDisplayed;
 
-        private Rectangle rectLeftTop, rectRightTop;
+        public static bool bookOpened, bookClosed;
+        private bool bookRight, bookLeft;
+        public static int bookFlip;
+
         private MouseState mouseState, mouseStatePrevious;
         private bool previousPressed, nextPressed;
-
-        private Color startColor, endColor;
-        private float colorTimer, colorTimerMax, currentColor;
+        private Rectangle rectPageLeft, rectPageRight;
 
         public Book(ContentManager content, SpriteBatch spriteBatch)
         {
@@ -49,10 +51,16 @@ namespace Tower_Defense
         public void Load()
         {
             bookTexture = _content.Load<Texture2D>("Book/BookTexture");
+            tabTexture = _content.Load<Texture2D>("Book/tab");
             scale = 3f;
             frameMax = 14; frameCount = 0;
             frameWidth = bookTexture.Width / frameMax;
             frameHeight = bookTexture.Height;
+
+            posLeft = new Vector2(20, 15);
+            posRight = new Vector2(posLeft.X + frameWidth * scale, posLeft.Y);
+            rectPageLeft = new Rectangle((int)posLeft.X, (int)posLeft.Y, (int)(frameWidth * scale), (int)(frameHeight * scale));
+            rectPageRight = new Rectangle((int)posRight.X, (int)posRight.Y, (int)(frameWidth * scale), (int)(frameHeight * scale));
 
             textureRect = new Dictionary<int, Rectangle>();
             for(int i = 0; i < frameMax; i++)
@@ -66,99 +74,103 @@ namespace Tower_Defense
             sourceRectRightBottom = textureRect[14];
             sourceRectRightTop = textureRect[14];
 
-            bookOpened = false; bookClosed = false;
-            bookFlipOpen = 5; bookFlipClose = 5;
-
-            posLeft = new Vector2(75, 15);
-            posRight = new Vector2(75 + frameWidth * scale, 15);
-
-            frameStart = 0; frameEnd = 2;
+            bookOpened = false; bookClosed = false; bookRight = false; bookLeft = false;
+            bookFlip = 0;
             frameTimer = 0;
             frameCount = 0;
 
             IsBookOpen = false;
 
-            //Debug.WriteLine($"posLeft.X = {posLeft.X}, posLeft.Y = {posLeft.Y}, posRight.X = {posRight.X}, posRight.Y = {posRight.Y}");
-
-            rectLeftTop = new Rectangle((int)posLeft.X, (int)posLeft.Y, frameWidth / 2, frameHeight);
-            rectRightTop = new Rectangle((int)posLeft.X + frameWidth / 2, (int)posLeft.Y, frameWidth / 2, frameHeight);
+            for (int i = 0; i < 8; i++)
+            {
+                tabSource[i] = new Rectangle(0, 0, 0, 0);
+            }
+            for (int i = 0; i < 8; i++)
+            {
+                tabPos[i] = new Vector2(1000, i * (78+20) + 200);
+            }
+            tabDisplayed = false;
         }
 
         public void Update(GameTime gameTime)
         {
             if (IsBookOpen)
             {
-                UpdateBook(gameTime);
-            }
-            else
-            {
-                //startColor = Color.DarkGoldenrod; endColor = Color.Transparent;
-                //colorTimer = 0; colorTimerMax = 10f;
+                UpdateBookFrame(gameTime);
+                CheckPageAction(gameTime);
             }
         }
 
-        public void UpdateBook(GameTime gameTime)
+        public void CheckPageAction(GameTime gameTime)
+        {
+            mouseState = Mouse.GetState();
+            /////
+            if (rectPageLeft.Contains(mouseState.Position) && mouseState.LeftButton == ButtonState.Pressed && mouseStatePrevious.LeftButton == ButtonState.Released)
+            {
+                previousPressed = true;
+            }
+            if (rectPageLeft.Contains(mouseState.Position) && previousPressed && mouseState.LeftButton == ButtonState.Released)
+            {
+                Debug.WriteLine($"X = {rectPageLeft.X}, Y = {rectPageLeft.Y}, W {rectPageLeft.Width}, Y = {rectPageLeft.Height}");
+                frameTimer = 0;
+                bookLeft = true;
+                previousPressed = false;
+            }
+            else if (previousPressed && mouseState.LeftButton == ButtonState.Released)
+            {
+                previousPressed = false;
+            }
+            ///////
+            if (rectPageRight.Contains(mouseState.Position) && mouseState.LeftButton == ButtonState.Pressed && mouseStatePrevious.LeftButton == ButtonState.Released)
+            {
+                nextPressed = true;
+            }
+            if (rectPageRight.Contains(mouseState.Position) && nextPressed && mouseState.LeftButton == ButtonState.Released)
+            {
+                frameTimer = 0;
+                bookRight = true;
+                nextPressed = false;
+            }
+            else if (nextPressed && mouseState.LeftButton == ButtonState.Released)
+            {
+                nextPressed = false;
+            }
+            /////
+            mouseStatePrevious = mouseState;
+        }
+
+        public void UpdateBookFrame(GameTime gameTime)
         {
             frameTimer += gameTime.ElapsedGameTime.Milliseconds;
-
-            //mouseState = Mouse.GetState();
-            ///////
-            //if (rectLeftTop.Contains(mouseState.Position) && mouseState.LeftButton == ButtonState.Pressed && mouseStatePrevious.LeftButton == ButtonState.Released)
-            //{
-            //    previousPressed = true;
-            //}
-            //if (rectLeftTop.Contains(mouseState.Position) && previousPressed && mouseState.LeftButton == ButtonState.Released)
-            //{
-            //    frameStart = 6; frameEnd = 0;
-            //    frameCurrent = frameStart;
-            //    frameTimer = 0;
-            //    previousPressed = false;
-            //    //startColor = Color.DarkGoldenrod; endColor = Color.Transparent;
-            //    //colorTimer = 0; colorTimerMax = 350f;
-            //}
-            //else if (previousPressed && mouseState.LeftButton == ButtonState.Released)
-            //{
-            //    previousPressed = false;
-            //}
-            /////////
-            //if (rectRightTop.Contains(mouseState.Position) && mouseState.LeftButton == ButtonState.Pressed && mouseStatePrevious.LeftButton == ButtonState.Released)
-            //{
-            //    nextPressed = true;
-            //}
-            //if (rectRightTop.Contains(mouseState.Position) && nextPressed && mouseState.LeftButton == ButtonState.Released)
-            //{
-            //    frameStart = 0; frameEnd = 6;
-            //    frameCurrent = frameStart;
-            //    frameTimer = 0;
-            //    nextPressed = false;
-            //    //startColor = Color.DarkGoldenrod; endColor = Color.Transparent;
-            //    //colorTimer = 0; colorTimerMax = 200f;
-            //}
-            //else if (nextPressed && mouseState.LeftButton == ButtonState.Released)
-            //{
-            //    nextPressed = false;
-            //}
-            ///////
-            //mouseStatePrevious = mouseState;
-
-
             if (bookOpened == false)
             {
                 BookOpening(100f);
             }
-            if (bookFlipOpen > 0)
+            if (bookOpened && tabDisplayed == false)
             {
-                PageForward(25f);
+                tabFrameTimer += gameTime.ElapsedGameTime.Milliseconds;
+                DisplayTabs(16f);
             }
-            //if (frameStart == 0 && frameEnd == 6)
-            //{
-            //    PageForward(100f);
-            //}
-            //if (frameStart == 6 && frameEnd == 0)
-            //{
-            //    PageBackward(100f);
-            //}
-            //if (frameStart == 0 && frameEnd == 0) frameTimer = 0;
+            if (bookFlip > 0)
+            {
+                PageForward(16f);
+            }
+            if (bookFlip < 0)
+            {
+                PageBackward(16f);
+            }
+            if (bookLeft)
+            {
+                PageBackward(50f);
+            }
+            if (bookRight)
+            {
+                PageForward(50f);
+            }
+            if (bookClosed && bookFlip == 0)
+            {
+                BookClosing(100f);
+            }
         }
 
         public void BookOpening(float frameSpeed)
@@ -188,12 +200,12 @@ namespace Tower_Defense
                     case 3:
                         sourceRectLeftBottom = textureRect[10];
                         sourceRectLeftTop = textureRect[14];
-                        sourceRectRightBottom = textureRect[4];
-                        sourceRectRightTop = textureRect[3];
+                        sourceRectRightBottom = textureRect[3];
+                        sourceRectRightTop = textureRect[14];
 
                         bookOpened = true;
                         frameCount = -1;
-                        bookFlipOpen = 5;
+                        bookFlip = 5;
                         break;
                     default:
                         break;
@@ -201,6 +213,49 @@ namespace Tower_Defense
                 frameCount++;
                 frameTimer = 0;
                 
+            }
+        }
+
+        public void BookClosing(float frameSpeed)
+        {
+            if (frameTimer > frameSpeed)
+            {
+                switch (frameCount)
+                {
+                    case 0:
+                        sourceRectLeftBottom = textureRect[10];
+                        sourceRectLeftTop = textureRect[14];
+                        sourceRectRightBottom = textureRect[11];
+                        sourceRectRightTop = textureRect[14];
+                        break;
+                    case 1:
+                        sourceRectLeftBottom = textureRect[10];
+                        sourceRectLeftTop = textureRect[12];
+                        sourceRectRightBottom = textureRect[14];
+                        sourceRectRightTop = textureRect[14];
+                        break;
+                    case 2:
+                        sourceRectLeftBottom = textureRect[13];
+                        sourceRectLeftTop = textureRect[14];
+                        sourceRectRightBottom = textureRect[14];
+                        sourceRectRightTop = textureRect[14];
+                        break;
+                    case 3:
+                        sourceRectLeftBottom = textureRect[14];
+                        sourceRectLeftTop = textureRect[14];
+                        sourceRectRightBottom = textureRect[14];
+                        sourceRectRightTop = textureRect[14];
+
+                        bookOpened = false;
+                        IsBookOpen = false;
+                        frameCount = -1;
+                        bookFlip = 0;
+                        break;
+                    default:
+                        break;
+                }
+                frameCount++;
+                frameTimer = 0;
             }
         }
 
@@ -245,18 +300,18 @@ namespace Tower_Defense
                         sourceRectLeftTop = textureRect[9];
                         sourceRectRightBottom = textureRect[3];
                         sourceRectRightTop = textureRect[14];
+                        break;
+                    case 6:
+                        sourceRectLeftBottom = textureRect[10];
+                        sourceRectLeftTop = textureRect[14];
+                        sourceRectRightBottom = textureRect[3];
+                        sourceRectRightTop = textureRect[14];
                         frameCount = -1;
-                        bookFlipOpen--;
+                        bookRight = false;
+                        if (bookFlip > 0) bookFlip--;
                         break;
                     default:
                         break;
-                }
-                if (bookFlipOpen == 0)
-                {
-                    sourceRectLeftBottom = textureRect[10];
-                    sourceRectLeftTop = textureRect[14];
-                    sourceRectRightBottom = textureRect[3];
-                    sourceRectRightTop = textureRect[14];
                 }
                 frameCount++;
                 frameTimer = 0;
@@ -267,20 +322,67 @@ namespace Tower_Defense
         {
             if (frameTimer > frameSpeed)
             {
-                if (frameCount == frameEnd)
+                switch (frameCount)
                 {
-                    frameStart = 0; frameEnd = 0;
-                    frameCount = 0;
-                    //startColor = Color.Transparent; endColor = Color.DarkGoldenrod;
-                    //colorTimer = 0; colorTimerMax = 200f;
+                    case 0:
+                        sourceRectLeftBottom = textureRect[10];
+                        sourceRectLeftTop = textureRect[9];
+                        sourceRectRightBottom = textureRect[3];
+                        sourceRectRightTop = textureRect[14];
+                        break;
+                    case 1:
+                        sourceRectLeftBottom = textureRect[10];
+                        sourceRectLeftTop = textureRect[8];
+                        sourceRectRightBottom = textureRect[3];
+                        sourceRectRightTop = textureRect[14];
+                        break;
+                    case 2:
+                        sourceRectLeftBottom = textureRect[10];
+                        sourceRectLeftTop = textureRect[7];
+                        sourceRectRightBottom = textureRect[3];
+                        sourceRectRightTop = textureRect[14];
+                        break;
+                    case 3:
+                        sourceRectLeftBottom = textureRect[10];
+                        sourceRectLeftTop = textureRect[14];
+                        sourceRectRightBottom = textureRect[3];
+                        sourceRectRightTop = textureRect[6];
+                        break;
+                    case 4:
+                        sourceRectLeftBottom = textureRect[10];
+                        sourceRectLeftTop = textureRect[14];
+                        sourceRectRightBottom = textureRect[3];
+                        sourceRectRightTop = textureRect[5];
+                        break;
+                    case 5:
+                        sourceRectLeftBottom = textureRect[10];
+                        sourceRectLeftTop = textureRect[14];
+                        sourceRectRightBottom = textureRect[3];
+                        sourceRectRightTop = textureRect[4];
+                        break;
+                    case 6:
+                        sourceRectLeftBottom = textureRect[10];
+                        sourceRectLeftTop = textureRect[14];
+                        sourceRectRightBottom = textureRect[3];
+                        sourceRectRightTop = textureRect[14];
+                        frameCount = -1;
+                        bookLeft = false;
+                        if (bookFlip < 0) bookFlip++;
+                        break;
+                    default:
+                        break;
                 }
-                if (frameCount > frameEnd)
-                {
-                    frameCount--;
-                    frameTimer = 0;
-                }
+                frameCount++;
+                frameTimer = 0;
             }
-            //sourceRectLeftTop = new Rectangle(frameCurrent * frameWidth, 0, frameWidth, frameHeight);
+        }
+
+        public void DisplayTabs(float frameSpeed)
+        {
+            if (tabFrameTimer > frameSpeed)
+            {
+
+            }
         }
 
         public void Draw(GameTime gameTime)
@@ -292,6 +394,14 @@ namespace Tower_Defense
 
                 _spriteBatch.Draw(bookTexture, posLeft, sourceRectLeftTop, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
                 _spriteBatch.Draw(bookTexture, posRight, sourceRectRightTop, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+
+                for (int i = 0; i < 8; i++)
+                {
+                    _spriteBatch.Draw(tabTexture, tabPos[i], tabSource[i], Color.White);
+                }
+
+
+
 
 
 

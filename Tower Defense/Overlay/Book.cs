@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -18,7 +19,7 @@ namespace Tower_Defense
 
         public static bool IsBookOpen;
 
-        private Texture2D bookTexture;
+        private Texture2D bookTexture, tabTexture, titleTextures, showcaseBorderTexture, showcaseTextures, statTexture, statMisc, descTexture;
         private Dictionary<int, Rectangle> textureRect;
         private Rectangle sourceRectLeftBottom, sourceRectRightBottom, sourceRectLeftTop, sourceRectRightTop;
         private Vector2 posLeft, posRight;
@@ -28,7 +29,6 @@ namespace Tower_Defense
         private float frameTimer;
 
         private List<Tab> tabList;
-        private Texture2D tabTexture;
         private int tabNumber;
         private bool creatingTabs;
         private float tabTimer, tabTimerInterval;
@@ -41,6 +41,9 @@ namespace Tower_Defense
         private bool previousPressed, nextPressed;
         private Rectangle rectPageLeft, rectPageRight;
 
+        private Dictionary<int, string> pageContentLeft, pageContentRight;
+        private Vector2 pagePosLeft, pagePosRight;
+
         public Book(ContentManager content, SpriteBatch spriteBatch)
         {
             _content = content;
@@ -49,8 +52,16 @@ namespace Tower_Defense
 
         public void Load()
         {
-            bookTexture = _content.Load<Texture2D>("Book/BookTexture");
+            bookTexture = _content.Load<Texture2D>("Book/BookTextures");
             tabTexture = _content.Load<Texture2D>("Book/tab");
+            titleTextures = _content.Load<Texture2D>("Book/titleTextures");
+            showcaseBorderTexture = _content.Load<Texture2D>("Book/showcaseBorderTexture");
+            showcaseTextures = _content.Load<Texture2D>("Book/showcaseTextures");
+            statTexture = _content.Load<Texture2D>("Book/statTexture");
+            statMisc = _content.Load<Texture2D>("Book/statMisc");
+            descTexture = _content.Load<Texture2D>("Book/descTexture");
+
+
             scale = 3f;
             frameMax = 14; frameCount = 0;
             frameWidth = bookTexture.Width / frameMax;
@@ -60,6 +71,9 @@ namespace Tower_Defense
             posRight = new Vector2(posLeft.X + frameWidth * scale, posLeft.Y);
             rectPageLeft = new Rectangle((int)posLeft.X, (int)posLeft.Y, (int)(frameWidth * scale), (int)(frameHeight * scale));
             rectPageRight = new Rectangle((int)posRight.X, (int)posRight.Y, (int)(frameWidth * scale), (int)(frameHeight * scale));
+
+            pagePosLeft = new Vector2(rectPageLeft.X + 50, rectPageLeft.Y + 210);
+            pagePosRight = new Vector2(rectPageRight.X + 50, rectPageRight.Y + 210);
 
             textureRect = new Dictionary<int, Rectangle>();
             for (int i = 0; i < frameMax; i++)
@@ -82,7 +96,7 @@ namespace Tower_Defense
 
             tabList = new List<Tab>();
             tabNumber = 0;
-            tabTimer = 0; tabTimerInterval = 150f;
+            tabTimer = 0; tabTimerInterval = 100f;
         }
 
         public void Update(GameTime gameTime)
@@ -91,10 +105,12 @@ namespace Tower_Defense
             {
                 UpdateBookFrame(gameTime);
                 CheckPageAction(gameTime);
+                PageContent();
                 foreach (Tab tab in tabList)
                 {
                     tab.Update(gameTime);
                 }
+
             }
         }
 
@@ -108,7 +124,6 @@ namespace Tower_Defense
             }
             if (rectPageLeft.Contains(mouseState.Position) && previousPressed && mouseState.LeftButton == ButtonState.Released)
             {
-                Debug.WriteLine($"X = {rectPageLeft.X}, Y = {rectPageLeft.Y}, W {rectPageLeft.Width}, Y = {rectPageLeft.Height}");
                 frameTimer = 0;
                 bookLeft = true;
                 previousPressed = false;
@@ -141,7 +156,7 @@ namespace Tower_Defense
             frameTimer += gameTime.ElapsedGameTime.Milliseconds;
             if (bookOpened == false)
             {
-                BookOpening(100f);
+                BookOpening(80f);
             }
             if (creatingTabs)
             {
@@ -166,7 +181,7 @@ namespace Tower_Defense
             }
             if (bookClosed && bookFlip == 0)
             {
-                BookClosing(100f);
+                BookClosing(80f);
             }
         }
 
@@ -202,7 +217,7 @@ namespace Tower_Defense
 
                         bookOpened = true;
                         frameCount = -1;
-                        bookFlip = 5;
+                        bookFlip = 3;
                         creatingTabs = true;
 
                         break;
@@ -226,6 +241,9 @@ namespace Tower_Defense
                         sourceRectLeftTop = textureRect[14];
                         sourceRectRightBottom = textureRect[11];
                         sourceRectRightTop = textureRect[14];
+
+                        tabList.Clear();
+
                         break;
                     case 1:
                         sourceRectLeftBottom = textureRect[10];
@@ -249,8 +267,8 @@ namespace Tower_Defense
                         IsBookOpen = false;
                         frameCount = -1;
                         bookFlip = 0;
-                        tabList.Clear();
                         tabNumber = 0;
+
                         break;
                     default:
                         break;
@@ -379,6 +397,27 @@ namespace Tower_Defense
             }
         }
 
+        public void PageContent()
+        {
+            if (sourceRectLeftBottom == textureRect[10])
+            {
+                pageContentLeft = Lexicon.lexiconContent["Summary"];
+            }
+            else
+            {
+                pageContentLeft = Lexicon.lexiconContent["Void"];
+            }
+
+            if (sourceRectRightBottom == textureRect[3])
+            {
+                pageContentRight = Lexicon.lexiconContent["Summary"];
+            }
+            else
+            {
+                pageContentRight = Lexicon.lexiconContent["Void"];
+            }
+        }
+
         public void CreateTabs()
         {
             if (tabTimer > tabTimerInterval && tabNumber < 8)
@@ -395,6 +434,15 @@ namespace Tower_Defense
             {
                 _spriteBatch.Draw(bookTexture, posLeft, sourceRectLeftBottom, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
                 _spriteBatch.Draw(bookTexture, posRight, sourceRectRightBottom, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+
+                for (int i = 0; i< Lexicon.lexiconContent["Summary"].Count; i++)
+                {
+                    _spriteBatch.DrawString(Overlay.cinzelBoldFont, pageContentLeft[i], new Vector2(pagePosLeft.X, pagePosLeft.Y + 20 * i), Color.Gold);
+                }
+                for (int i = 0; i < Lexicon.lexiconContent["Summary"].Count; i++)
+                {
+                    _spriteBatch.DrawString(Overlay.cinzelBoldFont, pageContentRight[i], new Vector2(pagePosRight.X, pagePosRight.Y + 20 * i), Color.SaddleBrown);
+                }
 
                 _spriteBatch.Draw(bookTexture, posLeft, sourceRectLeftTop, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
                 _spriteBatch.Draw(bookTexture, posRight, sourceRectRightTop, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);

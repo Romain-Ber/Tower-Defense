@@ -31,7 +31,7 @@ namespace Tower_Defense
             }
             else if (Book.IsBookOpen == true && Book.bookClosed == false && Book.bookFlip == 0)
             {
-                Book.bookFlip = 5;
+                Book.bookFlip = 3;
                 Book.bookClosed = true;
             }
         }

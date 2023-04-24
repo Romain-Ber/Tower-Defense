@@ -19,7 +19,7 @@ namespace Tower_Defense
 
         public static bool IsBookOpen;
 
-        private Texture2D bookTexture, tabTexture, titleTextures, showcaseBorderTexture, showcaseTextures, statTexture, statMisc, descTexture;
+        public static Texture2D bookTexture, tabTexture, titleTextures, showcaseTextures, statTexture, statMisc, descTexture;
         private Dictionary<int, Rectangle> textureRect;
         private Rectangle sourceRectLeftBottom, sourceRectRightBottom, sourceRectLeftTop, sourceRectRightTop;
         private Vector2 posLeft, posRight;
@@ -55,7 +55,6 @@ namespace Tower_Defense
             bookTexture = _content.Load<Texture2D>("Book/BookTextures");
             tabTexture = _content.Load<Texture2D>("Book/tab");
             titleTextures = _content.Load<Texture2D>("Book/titleTextures");
-            showcaseBorderTexture = _content.Load<Texture2D>("Book/showcaseBorderTexture");
             showcaseTextures = _content.Load<Texture2D>("Book/showcaseTextures");
             statTexture = _content.Load<Texture2D>("Book/statTexture");
             statMisc = _content.Load<Texture2D>("Book/statMisc");
@@ -401,20 +400,20 @@ namespace Tower_Defense
         {
             if (sourceRectLeftBottom == textureRect[10])
             {
-                pageContentLeft = Lexicon.lexiconContent["Summary"];
+                pageContentLeft = Database.lexiconContent["Summary"];
             }
             else
             {
-                pageContentLeft = Lexicon.lexiconContent["Void"];
+                pageContentLeft = Database.lexiconContent["Void"];
             }
 
             if (sourceRectRightBottom == textureRect[3])
             {
-                pageContentRight = Lexicon.lexiconContent["Summary"];
+                pageContentRight = Database.lexiconContent["Summary"];
             }
             else
             {
-                pageContentRight = Lexicon.lexiconContent["Void"];
+                pageContentRight = Database.lexiconContent["Void"];
             }
         }
 
@@ -435,11 +434,11 @@ namespace Tower_Defense
                 _spriteBatch.Draw(bookTexture, posLeft, sourceRectLeftBottom, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
                 _spriteBatch.Draw(bookTexture, posRight, sourceRectRightBottom, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
 
-                for (int i = 0; i< Lexicon.lexiconContent["Summary"].Count; i++)
+                for (int i = 0; i< Database.lexiconContent["Summary"].Count; i++)
                 {
                     _spriteBatch.DrawString(Overlay.cinzelBoldFont, pageContentLeft[i], new Vector2(pagePosLeft.X, pagePosLeft.Y + 20 * i), Color.Gold);
                 }
-                for (int i = 0; i < Lexicon.lexiconContent["Summary"].Count; i++)
+                for (int i = 0; i < Database.lexiconContent["Summary"].Count; i++)
                 {
                     _spriteBatch.DrawString(Overlay.cinzelBoldFont, pageContentRight[i], new Vector2(pagePosRight.X, pagePosRight.Y + 20 * i), Color.SaddleBrown);
                 }

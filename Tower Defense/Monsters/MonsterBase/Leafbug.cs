@@ -19,18 +19,26 @@ namespace Tower_Defense
         {
             name = "Leafbug";
 
-            frameMax = 8;
-            frameOffsetX = 0;
-            frameOffsetY = 0;
+            frameMax = (int)Database.monsterDictionary[name]["frameMax"];
+            frameOffsetX = (int)Database.monsterDictionary[name]["frameOffsetX"];
+            frameOffsetY = (int)Database.monsterDictionary[name]["frameOffsetY"];
             frameRow = 0;
-            frameSpeed = 100f;
+            frameSpeed = Database.monsterDictionary[name]["frameSpeed"];
 
-            monsterSpeed = 0.40f;
-            maxHealth = 10;
+            monsterSpeed = Database.monsterDictionary[name]["monsterSpeed"];
+            maxHealth = (int)Database.monsterDictionary[name]["maxHealth"];
             health = maxHealth;
+            if (Database.monsterDictionary[name]["IsGround"] == 1)
+            {
+                IsGround = true;
+                lastDirection = "DOWN";
+            }
+            else
+            {
+                IsGround = false;
+                lastDirection = "RIGHT";
+            }
 
-            IsGround = true;
-            lastDirection = "DOWN";
             sourceRect = new Rectangle(frameCurrent * monsterWidth + (frameCurrent * 2 + 1) * frameOffsetX,
                                        frameRow * monsterHeight + (frameRow * 2 + 1) * frameOffsetY,
                                        monsterWidth,

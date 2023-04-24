@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 
 namespace Tower_Defense
 {
-    public static class Lexicon
+    public static class Database
     {
         public static Dictionary<string, Dictionary<int, string>> lexiconContent;
 
-        static Lexicon()
-        {
+        public static Dictionary<string, Dictionary<string, int>> towerDictionary;
+        public static Dictionary<string, Dictionary<string, float>> monsterDictionary;
 
+        static Database()
+        {
             lexiconContent = new Dictionary<string, Dictionary<int, string>>
             {
                 { "Void", new Dictionary<int, string>
@@ -86,51 +88,58 @@ namespace Tower_Defense
                 //Towers
                 { "Arrow", new Dictionary<int, string>
                     {
-                        { 0, "The Arrow Tower constitute the first line of defense against"},
-                        { 1, "airborne targets. " },
-                        { 2, "single" }
+                        { 0, ""},
+                        { 1, "single" },
+                        { 2, "physical" }
                     }
                 },
                 { "Ballista", new Dictionary<int, string>
                     {
-                        { 1, "air" },
-                        { 2, "anti armor" }
+                        { 0, "air" },
+                        { 1, "single" },
+                        { 2, "physical" }
                     }
                 },
                 { "Blade", new Dictionary<int, string>
                     {
-                        { 1, "ground" },
-                        { 2, "aoe antiarmor" }
+                        { 0, "ground" },
+                        { 1, "aoe" },
+                        { 2, "physical/magical" }
                     }
                 },
                 { "Canon", new Dictionary<int, string>
                     {
-                        { 1, "ground" },
-                        { 2, "aoe dps" }
+                        { 0, "ground" },
+                        { 1, "aoe" },
+                        { 2, "physical" }
                     }
                 },
                 { "Catapult", new Dictionary<int, string>
                     {
-                        { 1, "ground" },
-                        { 2, "debuf" }
+                        { 0, "ground" },
+                        { 1, "aoe" },
+                        { 2, "magical" }
                     }
                 },
                 { "Nova", new Dictionary<int, string>
                     {
-                        { 1, "target all" },
-                        { 2, "ultimate" }
+                        { 0, "all" },
+                        { 1, "aoe" },
+                        { 2, "magical" }
                     }
                 },
                 { "Slingshot", new Dictionary<int, string>
                     {
-                        { 1, "air" },
-                        { 2, "debuf" }
+                        { 1, "all" },
+                        { 2, "aoe" },
+                        { 3, "magical" }
                     }
                 },
                 { "Zap", new Dictionary<int, string>
                     {
-                        { 1, "air" },
-                        { 2, "aoe dps" }
+                        { 0, " " },
+                        { 1, "single" },
+                        { 2, "magical" }
                     }
                 },
                 ///Monsters
@@ -182,6 +191,130 @@ namespace Tower_Defense
                         { 2, "superfast" }
                     }
                 },
+            };
+            towerDictionary = new Dictionary<string, Dictionary<string, int>>
+            {
+                {"Arrow", new Dictionary<string, int>
+                    {
+                    {"ground", 0},
+                    {"air", 1 },
+                    {"aoe", 0 },
+                    {"physical", 1 },
+                    {"lightning", 0 },
+                    {"slow", 0 },
+                    {"range", 3 },
+                    {"speed", 5 },
+                    {"rotation", 1 }
+                    }
+                },
+            };
+
+            monsterDictionary = new Dictionary<string, Dictionary<string, float>>
+            {
+                {"Leafbug", new Dictionary<string, float>
+                    {
+                    {"monsterWidth", 64 },
+                    {"monsterHeight", 64 },
+                    {"frameMax", 8},
+                    {"frameOffsetX", 0 },
+                    {"frameOffsetY", 0 },
+                    {"frameSpeed", 100 },
+                    {"monsterSpeed", 0.40f },
+                    {"maxHealth", 10 },
+                    {"IsGround", 1 }
+                    }
+                },
+                {"Firebug", new Dictionary<string, float>
+                    {
+                    {"monsterWidth", 64 },
+                    {"monsterHeight", 64 },
+                    {"frameMax", 8},
+                    {"frameOffsetX", 32 },
+                    {"frameOffsetY", 0 },
+                    {"frameSpeed", 100 },
+                    {"monsterSpeed", 1f },
+                    {"maxHealth", 10 },
+                    {"IsGround", 1 }
+                    }
+                },
+                {"FlyingLocust", new Dictionary<string, float>
+                    {
+                    {"monsterWidth", 64 },
+                    {"monsterHeight", 64 },
+                    {"frameMax", 8},
+                    {"frameOffsetX", 32 },
+                    {"frameOffsetY", 0 },
+                    {"frameSpeed", 80 },
+                    {"monsterSpeed", 1f },
+                    {"maxHealth", 10 },
+                    {"IsGround", 0 }
+                    }
+                },
+                {"Firewasp", new Dictionary<string, float>
+                    {
+                    {"monsterWidth", 64 },
+                    {"monsterHeight", 64 },
+                    {"frameMax", 8},
+                    {"frameOffsetX", 16 },
+                    {"frameOffsetY", 16 },
+                    {"frameSpeed", 100 },
+                    {"monsterSpeed", 2f },
+                    {"maxHealth", 10 },
+                    {"IsGround", 0 }
+                    }
+                },
+                {"MagmaCrab", new Dictionary<string, float>
+                    {
+                    {"monsterWidth", 64 },
+                    {"monsterHeight", 64 },
+                    {"frameMax", 8},
+                    {"frameOffsetX", 0 },
+                    {"frameOffsetY", 0 },
+                    {"frameSpeed", 100 },
+                    {"monsterSpeed", 0.75f },
+                    {"maxHealth", 10 },
+                    {"IsGround", 1 }
+                    }
+                },
+                {"Clampbeetle", new Dictionary<string, float>
+                    {
+                    {"monsterWidth", 64 },
+                    {"monsterHeight", 64 },
+                    {"frameMax", 8},
+                    {"frameOffsetX", 0 },
+                    {"frameOffsetY", 0 },
+                    {"frameSpeed", 80 },
+                    {"monsterSpeed", 0.75f },
+                    {"maxHealth", 10 },
+                    {"IsGround", 0 }
+                    }
+                },
+                {"Scorpion", new Dictionary<string, float>
+                    {
+                    {"monsterWidth", 64 },
+                    {"monsterHeight", 64 },
+                    {"frameMax", 8},
+                    {"frameOffsetX", 0 },
+                    {"frameOffsetY", 0 },
+                    {"frameSpeed", 100 },
+                    {"monsterSpeed", 0.75f },
+                    {"maxHealth", 10 },
+                    {"IsGround", 1 }
+                    }
+                },
+                {"Voidbutterfly", new Dictionary<string, float>
+                    {
+                    {"monsterWidth", 64 },
+                    {"monsterHeight", 64 },
+                    {"frameMax", 4},
+                    {"frameOffsetX", 0 },
+                    {"frameOffsetY", 0 },
+                    {"frameSpeed", 100 },
+                    {"monsterSpeed", 2f },
+                    {"maxHealth", 10 },
+                    {"IsGround", 0 }
+                    }
+                }
             };
         }
     }

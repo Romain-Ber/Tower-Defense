@@ -434,14 +434,14 @@ namespace Tower_Defense
                 _spriteBatch.Draw(bookTexture, posLeft, sourceRectLeftBottom, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
                 _spriteBatch.Draw(bookTexture, posRight, sourceRectRightBottom, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
 
-                for (int i = 0; i< Database.lexiconContent["Summary"].Count; i++)
-                {
-                    _spriteBatch.DrawString(Overlay.cinzelBoldFont, pageContentLeft[i], new Vector2(pagePosLeft.X, pagePosLeft.Y + 20 * i), Color.Gold);
-                }
-                for (int i = 0; i < Database.lexiconContent["Summary"].Count; i++)
-                {
-                    _spriteBatch.DrawString(Overlay.cinzelBoldFont, pageContentRight[i], new Vector2(pagePosRight.X, pagePosRight.Y + 20 * i), Color.SaddleBrown);
-                }
+                //for (int i = 0; i< Database.lexiconContent["Summary"].Count; i++)
+                //{
+                //    _spriteBatch.DrawString(Overlay.cinzelBoldFont, pageContentLeft[i], new Vector2(pagePosLeft.X, pagePosLeft.Y + 20 * i), Color.Gold);
+                //}
+                //for (int i = 0; i < Database.lexiconContent["Summary"].Count; i++)
+                //{
+                //    _spriteBatch.DrawString(Overlay.cinzelBoldFont, pageContentRight[i], new Vector2(pagePosRight.X, pagePosRight.Y + 20 * i), Color.SaddleBrown);
+                //}
 
                 _spriteBatch.Draw(bookTexture, posLeft, sourceRectLeftTop, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
                 _spriteBatch.Draw(bookTexture, posRight, sourceRectRightTop, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);

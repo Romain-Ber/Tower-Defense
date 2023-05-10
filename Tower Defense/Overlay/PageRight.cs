@@ -51,6 +51,7 @@ namespace Tower_Defense
                                        frameRow * monsterHeight + (frameRow * 2 + 1) * frameOffsetY,
                                        monsterWidth,
                                        monsterHeight);
+
         }
 
         public void Update(GameTime gameTime)
